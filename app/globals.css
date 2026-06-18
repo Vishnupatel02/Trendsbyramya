@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F8F6F1;
+  --foreground: #222222;
+}
+
+@theme {
+  --color-ivory: #F8F6F1;
+  --color-maroon: #7A1F2B;
+  --color-maroon-dark: #5C1720;
+  --color-gold: #C9A227;
+  --color-gold-light: #DFB93E;
+  --color-ink: #222222;
+  --color-ink-muted: #555555;
+  
+  --font-display: var(--font-playfair), serif;
+  --font-sans: var(--font-montserrat), sans-serif;
+}
+
+/* Base Body Styles */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F6F1;
+}
+::-webkit-scrollbar-thumb {
+  background: #C9A227;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7A1F2B;
+}
+
+/* Luxury Animations & Transitions */
+.gold-gradient {
+  background: linear-gradient(135deg, #C9A227 0%, #DFB93E 50%, #C9A227 100%);
+  background-size: 200% auto;
+  transition: background-position 0.5s ease;
+}
+.gold-gradient:hover {
+  background-position: right center;
+}
+
+.maroon-gradient {
+  background: linear-gradient(135deg, #7A1F2B 0%, #9E2B3A 50%, #7A1F2B 100%);
+  background-size: 200% auto;
+  transition: background-position 0.5s ease;
+}
+.maroon-gradient:hover {
+  background-position: right center;
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #C9A227 0%, #DFB93E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Smooth zoom transition */
+.image-zoom-trigger img {
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.image-zoom-trigger:hover img {
+  transform: scale(1.08);
+}
+
+/* Glassmorphism Classes */
+.glass-header {
+  background-color: rgba(248, 246, 241, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(122, 31, 43, 0.08);
+}
+
+/* Keyframe animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

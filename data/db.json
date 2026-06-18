@@ -1,0 +1,217 @@
+{
+  "categories": [
+    {
+      "id": "cat-handmade",
+      "name": "Handmade Jewellery",
+      "parent_type": "jewellery",
+      "slug": "handmade-jewellery"
+    },
+    {
+      "id": "cat-blackbeads",
+      "name": "Blackbeads Collection",
+      "parent_type": "jewellery",
+      "slug": "blackbeads-collection"
+    },
+    {
+      "id": "cat-necklaces",
+      "name": "Necklaces & Bracelets",
+      "parent_type": "jewellery",
+      "slug": "necklaces-bracelets"
+    },
+    {
+      "id": "cat-earrings",
+      "name": "Earrings Collection",
+      "parent_type": "jewellery",
+      "slug": "earrings-collection"
+    },
+    {
+      "id": "cat-temple",
+      "name": "Temple Jewellery",
+      "parent_type": "jewellery",
+      "slug": "temple-jewellery"
+    },
+    {
+      "id": "cat-kurtis",
+      "name": "Kurtis",
+      "parent_type": "clothing",
+      "slug": "kurtis"
+    },
+    {
+      "id": "cat-clothing",
+      "name": "Trendy Women's Clothing",
+      "parent_type": "clothing",
+      "slug": "trendy-womens-clothing"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-1",
+      "name": "Royal Temple Choker Set",
+      "description": "An exquisite, handcrafted temple jewelry choker set featuring traditional carvings of Goddess Lakshmi, adorned with premium red and green kemp stones and dangling gold beads. Complete with matching statement earrings.",
+      "price": 2499,
+      "images": [
+        "https://images.unsplash.com/photo-1617032213178-1b887b1b3b0e?w=800&q=80",
+        "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80"
+      ],
+      "category_id": "cat-temple",
+      "badge": "bestseller",
+      "status": "in_stock"
+    },
+    {
+      "id": "prod-2",
+      "name": "Premium Double Strand Blackbeads",
+      "description": "Elegant double strand black beads (mangalsutra) customized with a contemporary floral gold-plated pendant. Hand-knotted with micro-black beads for high durability and daily comfort.",
+      "price": 1899,
+      "images": [
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80"
+      ],
+      "category_id": "cat-blackbeads",
+      "badge": "trending",
+      "status": "in_stock"
+    },
+    {
+      "id": "prod-3",
+      "name": "Cascading Pearl Jhumkas",
+      "description": "Stunning handcrafted earrings featuring premium freshwater pearls cascading from a traditional gold-plated stud. Perfect for weddings, festivals, and special celebrations.",
+      "price": 1299,
+      "images": [
+        "https://images.unsplash.com/photo-1630019851114-04d301c0e28a?w=800&q=80",
+        "https://images.unsplash.com/photo-1599643478518-a784e5c4f839?w=800&q=80"
+      ],
+      "category_id": "cat-earrings",
+      "badge": "new_arrival",
+      "status": "in_stock"
+    },
+    {
+      "id": "prod-4",
+      "name": "Traditional Bridal G.J Pendant Necklace",
+      "description": "A heavy, regal gold-plated bridal necklace set featuring a large G.J (Gold-Jointed) pendant, detailed with premium ruby stones, emeralds, and dangling pearls. Comes with matching jhumkas.",
+      "price": 3499,
+      "images": [
+        "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800&q=80"
+      ],
+      "category_id": "cat-temple",
+      "badge": "limited_stock",
+      "status": "low_stock"
+    },
+    {
+      "id": "prod-5",
+      "name": "Elegant Silk Cotton Kurti",
+      "description": "Beautiful A-line kurti crafted from premium silk-cotton blend fabric. Features delicate hand-embroidery around the neck and sleeves, giving it an elegant, semi-formal appeal.",
+      "price": 1499,
+      "images": [
+        "https://images.unsplash.com/photo-1583391733981-5c55a0b0e0f0?w=800&q=80"
+      ],
+      "category_id": "cat-kurtis",
+      "badge": "new_arrival",
+      "status": "in_stock"
+    },
+    {
+      "id": "prod-6",
+      "name": "Floral Handblock Print Kurta",
+      "description": "Comfy, everyday wear kurta made with 100% pure organic cotton. Printed using traditional Rajasthani handblock methods with eco-friendly dyes. Features a relaxed fit and 3/4 sleeves.",
+      "price": 999,
+      "images": [
+        "https://images.unsplash.com/photo-1608748010899-18f300247112?w=800&q=80"
+      ],
+      "category_id": "cat-kurtis",
+      "badge": null,
+      "status": "in_stock"
+    },
+    {
+      "id": "prod-7",
+      "name": "Exquisite Antique Gold Kada Bangle",
+      "description": "An openable, antique gold-plated kada bangle with intricate filigree work and embedded ruby stones. Perfect statement piece to complement your ethnic sarees and lehengas.",
+      "price": 899,
+      "images": [
+        "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800&q=80"
+      ],
+      "category_id": "cat-necklaces",
+      "badge": "trending",
+      "status": "in_stock"
+    },
+    {
+      "id": "prod-8",
+      "name": "Georgette Festive Suit Set",
+      "description": "A stunning 3-piece festive suit set in deep maroon georgette, complete with a heavily embroidered dupatta. Includes matching straight pants.",
+      "price": 2999,
+      "images": [
+        "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80"
+      ],
+      "category_id": "cat-clothing",
+      "badge": "bestseller",
+      "status": "in_stock"
+    },
+    {
+      "name": "kurta set yellow",
+      "description": "sman bjx",
+      "price": 223,
+      "category_id": "cat-kurtis",
+      "status": "in_stock",
+      "badge": null,
+      "images": [
+        "/uploads/prod-1781806941386-y46o4.svg"
+      ],
+      "id": "prod-1781806948255",
+      "created_at": "2026-06-18T18:22:28.255Z"
+    },
+    {
+      "name": "am x",
+      "description": ",sm ",
+      "price": 5335,
+      "category_id": "cat-handmade",
+      "status": "in_stock",
+      "badge": null,
+      "images": [
+        "/uploads/prod-1781807014179-flctg.jpg"
+      ],
+      "id": "prod-1781807016359",
+      "created_at": "2026-06-18T18:23:36.359Z"
+    },
+    {
+      "name": "vishnu",
+      "description": "dsmsbd",
+      "price": 233,
+      "category_id": "cat-kurtis",
+      "status": "in_stock",
+      "badge": null,
+      "images": [
+        "/uploads/prod-1781807882297-f5v9r.jpg"
+      ],
+      "id": "prod-1781807884363",
+      "created_at": "2026-06-18T18:38:04.363Z"
+    }
+  ],
+  "site_config": {
+    "whatsapp_number": "+91 97052 82684",
+    "email_address": "ramyajangili221@gmail.com",
+    "instagram_url": "https://www.instagram.com/trends_by_ramya"
+  },
+  "instagram_feed": [
+    {
+      "id": "ig-1",
+      "image_url": "https://images.unsplash.com/photo-1617032213178-1b887b1b3b0e?w=600&q=80",
+      "post_url": "https://www.instagram.com/trends_by_ramya",
+      "caption": "Bridal glow with our Royal Temple Choker set. Custom orders open ✨"
+    },
+    {
+      "id": "ig-2",
+      "image_url": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&q=80",
+      "post_url": "https://www.instagram.com/trends_by_ramya",
+      "caption": "Intricate temple detailing close-up. Pure handcrafted perfection. 💛"
+    },
+    {
+      "id": "ig-3",
+      "image_url": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&q=80",
+      "post_url": "https://www.instagram.com/trends_by_ramya",
+      "caption": "Everyday elegance with customized blackbeads strands. Customized length. 🌸"
+    },
+    {
+      "id": "ig-4",
+      "image_url": "https://images.unsplash.com/photo-1583391733981-5c55a0b0e0f0?w=600&q=80",
+      "post_url": "https://www.instagram.com/trends_by_ramya",
+      "caption": "Stunning block print kurtis perfect for the summer season. Order yours now!"
+    }
+  ],
+  "reviews": []
+}
