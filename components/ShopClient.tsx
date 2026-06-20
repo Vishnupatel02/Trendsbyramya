@@ -122,6 +122,15 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
         (c) => c.id === selectedCategory || c.slug === selectedCategory
       );
 
+      console.log("=== CATEGORY FILTER DEBUG ===");
+      console.log("Selected Category State:", selectedCategory);
+      console.log("Selected Category Details:", selectedCatObj ? {
+        id: selectedCatObj.id,
+        slug: selectedCatObj.slug,
+        name: selectedCatObj.name,
+        parent_type: selectedCatObj.parent_type
+      } : "NOT FOUND");
+
       if (selectedCatObj) {
         if (selectedCatObj.parent_type === "root") {
           // Parent category selected: show products from all its subcategories
@@ -136,17 +145,29 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
           subcatIds.push(selectedCatObj.id);
           subcatSlugs.push(selectedCatObj.slug);
 
+          console.log("Parent Category Selected. Subcategories found:", subcategories.map(c => ({ id: c.id, slug: c.slug, name: c.name })));
+
           result = result.filter((p) => {
             const pCatId = (p.category_id || "").trim().toLowerCase();
-            return (
-              subcatIds.some((id) => id.trim().toLowerCase() === pCatId) ||
-              subcatSlugs.some((slug) => slug.trim().toLowerCase() === pCatId) ||
-              subcatSlugs.some((slug) => {
-                const cleanSlug = slug.trim().toLowerCase().replace(/-+$/g, "");
-                const cleanProductCat = pCatId.replace(/-+$/g, "");
-                return cleanSlug === cleanProductCat;
-              })
-            );
+            const matchedCat = categories.find(c => c.id === p.category_id || c.slug === p.category_id);
+            const isMatched = subcatIds.some((id) => id.trim().toLowerCase() === pCatId) ||
+                              subcatSlugs.some((slug) => slug.trim().toLowerCase() === pCatId) ||
+                              subcatSlugs.some((slug) => {
+                                const cleanSlug = slug.trim().toLowerCase().replace(/-+$/g, "");
+                                const cleanProductCat = pCatId.replace(/-+$/g, "");
+                                return cleanSlug === cleanProductCat;
+                              });
+
+            console.log(`Product Comparison:`, {
+              "product.id": p.id,
+              "product.name": p.name,
+              "product.category_id": p.category_id,
+              "product.category_slug": matchedCat ? matchedCat.slug : "UNKNOWN",
+              "product.category_name": matchedCat ? matchedCat.name : "UNKNOWN",
+              "is_matched": isMatched
+            });
+
+            return isMatched;
           });
         } else {
           // Subcategory selected: filter by category_id directly (using robust comparison)
@@ -155,11 +176,26 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
             const selCatId = selectedCatObj.id.trim().toLowerCase();
             const selCatSlug = selectedCatObj.slug.trim().toLowerCase();
             
-            return (
-              pCatId === selCatId ||
-              pCatId === selCatSlug ||
-              pCatId.replace(/-+$/g, "") === selCatSlug.replace(/-+$/g, "")
-            );
+            const isMatched = pCatId === selCatId ||
+                              pCatId === selCatSlug ||
+                              pCatId.replace(/-+$/g, "") === selCatSlug.replace(/-+$/g, "");
+
+            const matchedCat = categories.find(c => c.id === p.category_id || c.slug === p.category_id);
+            
+            console.log(`Product Comparison:`, {
+              "product.id": p.id,
+              "product.name": p.name,
+              "product.category_id": p.category_id,
+              "product.category_slug": matchedCat ? matchedCat.slug : "UNKNOWN",
+              "product.category_name": matchedCat ? matchedCat.name : "UNKNOWN",
+              "selectedCategory": selectedCategory,
+              "selectedCategoryId": selCatId,
+              "selectedCategorySlug": selCatSlug,
+              "selectedCategoryName": selectedCatObj.name,
+              "is_matched": isMatched
+            });
+
+            return isMatched;
           });
         }
       } else {
@@ -167,7 +203,23 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
         result = result.filter((p) => {
           const pCatId = (p.category_id || "").trim().toLowerCase();
           const selCat = selectedCategory.trim().toLowerCase();
-          return pCatId === selCat || pCatId.replace(/-+$/g, "") === selCat.replace(/-+$/g, "");
+          const isMatched = pCatId === selCat || pCatId.replace(/-+$/g, "") === selCat.replace(/-+$/g, "");
+          const matchedCat = categories.find(c => c.id === p.category_id || c.slug === p.category_id);
+
+          console.log(`Product Comparison (No Category Obj Found):`, {
+            "product.id": p.id,
+            "product.name": p.name,
+            "product.category_id": p.category_id,
+            "product.category_slug": matchedCat ? matchedCat.slug : "UNKNOWN",
+            "product.category_name": matchedCat ? matchedCat.name : "UNKNOWN",
+            "selectedCategory": selectedCategory,
+            "selectedCategoryId": "",
+            "selectedCategorySlug": "",
+            "selectedCategoryName": "",
+            "is_matched": isMatched
+          });
+
+          return isMatched;
         });
       }
     }
