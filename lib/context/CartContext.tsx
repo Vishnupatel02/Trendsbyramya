@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product, CartItem } from "../types";
+import { useAuth } from "./AuthContext";
 
 interface CartContextType {
   cart: CartItem[];
@@ -19,9 +20,21 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // Future Auth Integration - Sync local cart & wishlist when guest logs in
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+    
+    if (!user.isAnonymous) {
+      console.log(`Future Auth Integration: Syncing local guest cart (${cart.length} items) and wishlist (${wishlist.length} items) to user account: ${user.email || user.phone || user.id}`);
+      // In the future, this is where we would trigger:
+      // await supabase.from('carts').upsert({ user_id: user.id, items: cart });
+    }
+  }, [user, isLoaded]);
 
   // Load cart and wishlist from localStorage on mount
   useEffect(() => {

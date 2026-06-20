@@ -61,3 +61,12 @@ export interface Review {
   created_at: string;
 }
 
+export interface User {
+  id: string;
+  email?: string;
+  phone?: string;
+  displayName?: string;
+  isAnonymous: boolean;
+  avatarUrl?: string;
+}
+

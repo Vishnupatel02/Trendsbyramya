@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
+import { AuthProvider } from "@/lib/context/AuthContext";
 import { CartProvider } from "@/lib/context/CartContext";
 import "./globals.css";
 
@@ -49,7 +50,9 @@ export default function RootLayout({
       className={`${playfair.variable} ${montserrat.variable} h-full scroll-smooth`}
     >
       <body className="min-h-full bg-ivory text-ink font-sans flex flex-col antialiased">
-        <CartProvider>{children}</CartProvider>
+        <AuthProvider>
+          <CartProvider>{children}</CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
