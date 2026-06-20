@@ -112,6 +112,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
 
   const parentCategories = categories.filter((c) => c.parent_type === "root");
 
+  // Vercel deployment trigger comment
   // ==========================================
   // /* Watermark Dress Icon Controls */
   // ==========================================
