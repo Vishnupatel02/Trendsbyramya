@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Star, Heart, ShoppingBag, ShieldCheck, Award, MessageSquare, BadgePercent, Sparkles, Instagram, AlertTriangle, Mail, Clock } from "lucide-react";
+import { ArrowRight, Star, Heart, ShoppingBag, ShieldCheck, Award, MessageSquare, BadgePercent, Sparkles, Instagram, AlertTriangle, Mail } from "lucide-react";
 import { Product, Category, InstagramPost, SiteConfig, Review } from "@/lib/types";
 import { createContactEnquiryAction } from "@/lib/actions";
 import Header from "./Header";
@@ -278,7 +278,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                 {
                   step: "03",
                   title: "Secure Payment",
-                  desc: "Complete your transaction securely using UPI (Google Pay, PhonePe, Paytm) to the provided official UPI details.",
+                  desc: "Complete your transaction securely using UPI (Google Pay, PhonePe, Paytm) as guided by us on WhatsApp.",
                   icon: (
                     <svg className="w-6 h-6 text-maroon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -405,71 +405,6 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                     <div>
                       <h4 className="text-xs uppercase font-bold text-maroon tracking-wider">Email Support</h4>
                       <p className="text-xs font-bold text-ink mt-0.5">{siteConfig.email_address}</p>
-                    </div>
-                  </div>
-
-                  {/* Consultation Hours & Address Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    {/* Consultation Hours */}
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-gray-50 rounded-lg text-ink-muted mt-0.5">
-                        <Clock className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <p className="text-[9px] uppercase font-bold tracking-widest text-ink-muted">Consultation Hours</p>
-                        <p className="font-semibold text-ink leading-relaxed">
-                          Mon - Sat: 10:00 AM - 8:00 PM <br />
-                          <span className="text-gold-dark">Closed on Sundays</span>
-                        </p>
-                      </div>
-                    </div>
-                    {/* Delivery Info */}
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-gray-50 rounded-lg text-ink-muted mt-0.5">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-[9px] uppercase font-bold tracking-widest text-ink-muted">Delivery Locations</p>
-                        <p className="font-semibold text-ink leading-relaxed">
-                          Shipping Worldwide <br />
-                          <span className="text-gold-dark">Free Shipping inside India</span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Address & UPI Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-maroon/5">
-                    {/* Address */}
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-gray-50 rounded-lg text-ink-muted mt-0.5">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-[9px] uppercase font-bold tracking-widest text-ink-muted">Boutique Address</p>
-                        <p className="font-semibold text-ink leading-relaxed">
-                          Hyderabad, Telangana, India
-                        </p>
-                      </div>
-                    </div>
-                    {/* UPI Info */}
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-blue-50 rounded-lg text-blue-600 mt-0.5">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-[9px] uppercase font-bold tracking-widest text-ink-muted">UPI Payment Details</p>
-                        <p className="font-semibold text-ink leading-relaxed">
-                          UPI ID: <span className="font-bold text-maroon">ramyajangili221@oksbi</span>
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </div>

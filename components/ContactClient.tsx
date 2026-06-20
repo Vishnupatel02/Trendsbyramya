@@ -163,18 +163,6 @@ export default function ContactClient() {
                     <span className="text-[10px] text-gold-dark font-semibold mt-1 block">Click to visit profile &rarr;</span>
                   </div>
                 </a>
-
-                {/* Consultation Hours */}
-                <div className="flex items-center gap-4 p-5 bg-white border border-maroon/5 rounded-2xl">
-                  <div className="p-3 bg-ink/5 rounded-full text-ink-muted">
-                    <Clock className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs uppercase font-bold text-ink-muted tracking-wider">Consultation Hours</h3>
-                    <p className="text-xs font-semibold text-ink mt-0.5">Mon - Sat: 10:00 AM - 8:00 PM (IST)</p>
-                    <p className="text-[10px] text-ink-muted mt-1">Closed on Sundays &amp; Public Holidays</p>
-                  </div>
-                </div>
               </div>
             </div>
 

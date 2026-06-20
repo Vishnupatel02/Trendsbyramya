@@ -124,7 +124,7 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
             &#8377;{product.price.toLocaleString("en-IN")}
           </p>
 
-          <div className="flex gap-2 w-full">
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -134,7 +134,7 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
                 }
               }}
               disabled={product.status === "out_of_stock"}
-              className={`flex-1 flex items-center justify-center gap-1.5 rounded-full py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider shadow-sm transition-all duration-300 ${
+              className={`w-full sm:flex-1 flex items-center justify-center gap-1.5 rounded-full py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider shadow-sm transition-all duration-300 ${
                 product.status === "out_of_stock"
                   ? "bg-gray-150 text-gray-400 cursor-not-allowed border border-gray-200"
                   : "maroon-gradient text-white hover:shadow-md hover:scale-[1.02] cursor-pointer"
@@ -151,7 +151,7 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
               onClick={(e) => {
                 e.stopPropagation();
               }}
-              className="flex-1 flex items-center justify-center gap-1 rounded-full py-2.5 px-2 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider border border-green-500 bg-white hover:bg-green-50 text-green-600 transition-all duration-300 shadow-sm hover:scale-[1.02] cursor-pointer text-center"
+              className="w-full sm:flex-1 flex items-center justify-center gap-1 rounded-full py-2.5 px-2 text-[10px] font-bold uppercase tracking-wider border border-green-500 bg-white hover:bg-green-50 text-green-600 transition-all duration-300 shadow-sm hover:scale-[1.02] cursor-pointer text-center"
             >
               <WhatsAppIcon className="w-3.5 h-3.5 fill-current flex-shrink-0" />
               <span>Order on WhatsApp</span>

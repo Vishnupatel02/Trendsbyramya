@@ -150,19 +150,44 @@ export async function getCategories(): Promise<Category[]> {
   
   const categories = data || [];
   
-  // Backwards compatibility: If there are no parent categories (parent_type === 'root')
-  // in the database, we return default ones (Jewellery, Clothing) so the site works.
-  const hasParents = categories.some(c => c.parent_type === 'root');
-  if (!hasParents) {
-    const defaultParents: Category[] = [
-      { id: 'parent-jewellery', name: 'Jewellery', slug: 'jewellery', parent_type: 'root' },
-      { id: 'parent-clothing', name: 'Clothing', slug: 'clothing', parent_type: 'root' }
-    ];
-    return [...defaultParents, ...categories];
+  // Find all parent category slugs that actually exist as root rows in the DB
+  const existingParentSlugs = new Set(
+    categories.filter(c => c.parent_type === 'root').map(c => c.slug)
+  );
+
+  // Find all parent category slugs referenced by subcategories
+  const referencedParentSlugs = new Set(
+    categories.filter(c => c.parent_type && c.parent_type !== 'root').map(c => c.parent_type)
+  );
+
+  // Synthesize missing parent categories dynamically
+  const synthesizedParents: Category[] = [];
+  for (const slug of referencedParentSlugs) {
+    if (!existingParentSlugs.has(slug)) {
+      let name = slug.charAt(0).toUpperCase() + slug.slice(1);
+      if (slug === 'jewellery') name = 'Jewellery';
+      if (slug === 'clothing') name = 'Clothing';
+      
+      let imageUrl = undefined;
+      if (slug === 'jewellery') {
+        imageUrl = 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80';
+      } else if (slug === 'clothing') {
+        imageUrl = 'https://images.unsplash.com/photo-1608748010899-18f300247112?w=800&q=80';
+      }
+
+      synthesizedParents.push({
+        id: `parent-${slug}`,
+        name: name,
+        slug: slug,
+        parent_type: 'root',
+        image_url: imageUrl
+      });
+    }
   }
 
-  return categories;
+  return [...synthesizedParents, ...categories];
 }
+
 
 export async function addCategory(category: Omit<Category, 'id'> & { id?: string }): Promise<Category> {
   const categoryId = ensureUUID(category.id);
