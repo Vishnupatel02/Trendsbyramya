@@ -220,6 +220,37 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
                 {product.name}
               </h1>
 
+              {/* Rating Snippet / Scroll to Reviews Link */}
+              <div className="flex items-center gap-2">
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const avgRating = productReviews.length > 0 
+                      ? productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length 
+                      : 0;
+                    return (
+                      <Star 
+                        key={star} 
+                        className={`w-3.5 h-3.5 ${
+                          star <= Math.round(avgRating) 
+                            ? "text-gold fill-current" 
+                            : "text-gray-300"
+                        }`} 
+                      />
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={() => {
+                    document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="text-xs font-semibold text-maroon hover:underline cursor-pointer"
+                >
+                  {productReviews.length > 0 
+                    ? `(${productReviews.length} ${productReviews.length === 1 ? "review" : "reviews"})` 
+                    : "No reviews yet. Write a review"}
+                </button>
+              </div>
+
               {/* Price */}
               <div className="font-display text-2xl sm:text-3xl font-extrabold text-maroon">
                 &#8377;{product.price.toLocaleString("en-IN")}
@@ -315,7 +346,7 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
           </div>
 
           {/* Customer Reviews Section */}
-          <section className="border-t border-maroon/10 mt-16 pt-16">
+          <section id="reviews-section" className="border-t border-maroon/10 mt-16 pt-16 scroll-mt-24">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
               {/* Reviews List */}
               <div className="lg:col-span-7 space-y-6">
