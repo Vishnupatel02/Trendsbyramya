@@ -127,8 +127,8 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
   const textSize = "w-[240px] h-[133px] sm:w-[300px] sm:h-[167px] md:w-[360px] md:h-[200px] lg:w-[clamp(380px,29vw,510px)] lg:h-[clamp(210px,16vw,283px)]";
   const textTop = "top-[20%] md:top-1/2";
   const textLeftMobile = "left-[80%] -translate-x-1/2"; // Adjust mobile horizontal position (e.g., left-[40%] or left-[60%])
-  const textRight = "md:right-[12%]"; // Shift text slightly to the right of the dress icon
-  const textOpacity = "opacity-[0.40]"; // Opacity around 20-25%
+  const textRight = "md:right-[4%]"; // Shift text slightly to the right of the dress icon
+  const textOpacity = "opacity-[0.40] md:opacity-100"; // Opacity 40% on mobile, 100% (solid) on desktop
 
   return (
     <>
