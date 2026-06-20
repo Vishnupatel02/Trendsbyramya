@@ -115,10 +115,10 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
   // ==========================================
   // /* Watermark Dress Icon Controls */
   // ==========================================
-  const iconWidth = "w-[500px] sm:w-[380px] md:w-[480px] lg:w-[clamp(500px,38vw,680px)]";
-  const iconHeight = "h-[500px] sm:h-[380px] md:h-[480px] lg:h-[clamp(500px,38vw,680px)]";
-  const iconTop = "top-[26%] md:top-1/2";
-  const iconLeftMobile = "left-[30%] -translate-x-1/2"; // Adjust mobile horizontal position (e.g., left-[40%] or left-[60%])
+  const iconWidth = "w-[600px] sm:w-[380px] md:w-[480px] lg:w-[clamp(500px,38vw,680px)]";
+  const iconHeight = "h-[600px] sm:h-[380px] md:h-[480px] lg:h-[clamp(500px,38vw,680px)]";
+  const iconTop = "top-1/2";
+  const iconLeftMobile = "left-1/2 -translate-x-1/2"; // Adjust mobile horizontal position (e.g., left-[40%] or left-[60%])
   const iconRight = "md:right-[16%]"; // Position relative to the right boundary on desktop
 
   // ==========================================
