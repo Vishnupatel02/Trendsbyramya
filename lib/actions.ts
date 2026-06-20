@@ -1,8 +1,6 @@
 "use server";
 
 import { cookies } from "next/headers";
-import fs from "fs";
-import path from "path";
 import {
   getCategories,
   addCategory,
@@ -22,6 +20,7 @@ import {
   addReview,
   updateReview,
   deleteReview,
+  getSupabaseClient,
 } from "./db";
 import { Category, Product, SiteConfig, InstagramPost, Review } from "./types";
 
@@ -201,6 +200,33 @@ export async function fetchReviews(): Promise<Review[]> {
   return getReviews();
 }
 
+async function uploadToSupabaseStorage(file: File, folder: string): Promise<string> {
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  
+  const originalName = file.name || 'image.jpg';
+  const ext = originalName.includes('.') ? originalName.slice(originalName.lastIndexOf('.')) : '.jpg';
+  const filename = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 7)}${ext}`;
+
+  const client = await getSupabaseClient(true);
+  const { data, error } = await client.storage
+    .from('product-images')
+    .upload(filename, buffer, {
+      contentType: file.type || 'image/jpeg',
+      upsert: true
+    });
+
+  if (error) {
+    throw new Error(`Storage upload failed: ${error.message}`);
+  }
+
+  const { data: urlData } = client.storage
+    .from('product-images')
+    .getPublicUrl(filename);
+
+  return urlData.publicUrl;
+}
+
 export async function createReviewAction(formData: FormData): Promise<{ success: boolean; review?: Review; error?: string }> {
   try {
     const name = formData.get("name") as string;
@@ -212,18 +238,7 @@ export async function createReviewAction(formData: FormData): Promise<{ success:
 
     let imageUrl = "";
     if (imageFile && imageFile.size > 0) {
-      const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      
-      const ext = path.extname(imageFile.name) || ".jpg";
-      const filename = `rev-${Date.now()}-${Math.random().toString(36).substring(2, 7)}${ext}`;
-      const relativePath = `/uploads/reviews/${filename}`;
-      const absolutePath = path.join(process.cwd(), "public", relativePath);
-      
-      fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
-      fs.writeFileSync(absolutePath, buffer);
-      
-      imageUrl = relativePath;
+      imageUrl = await uploadToSupabaseStorage(imageFile, "reviews");
     }
 
     const reviewData = {
@@ -284,18 +299,8 @@ export async function uploadImageAction(formData: FormData): Promise<{ success: 
     const file = formData.get("file") as File;
     if (!file) throw new Error("No file uploaded");
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    const ext = path.extname(file.name) || ".jpg";
-    const filename = `prod-${Date.now()}-${Math.random().toString(36).substring(2, 7)}${ext}`;
-    const relativePath = `/uploads/${filename}`;
-    const absolutePath = path.join(process.cwd(), "public", relativePath);
-
-    fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
-    fs.writeFileSync(absolutePath, buffer);
-
-    return { success: true, url: relativePath };
+    const publicUrl = await uploadToSupabaseStorage(file, "products");
+    return { success: true, url: publicUrl };
   } catch (err: any) {
     console.error("Error uploading image:", err);
     return { success: false, error: err.message || "Failed to upload image." };
