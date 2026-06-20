@@ -99,23 +99,38 @@ export default function Header({ onCartClick }: HeaderProps) {
               Home
             </Link>
 
-            {parentCategories.map((cat) => {
-              const href = ["jewellery", "clothing"].includes(cat.slug) 
-                ? `/${cat.slug}` 
-                : `/shop?category=${cat.slug}`;
-              const isActive = pathname === href || (href.startsWith("/shop") && pathname.includes(`category=${cat.slug}`));
-              return (
-                <Link
-                  key={cat.id}
-                  href={href}
-                  className={`text-xs font-bold uppercase tracking-widest hover:text-maroon transition-colors ${
-                    isActive ? "text-maroon border-b border-maroon/20 pb-0.5" : "text-ink-muted"
-                  }`}
-                >
-                  {cat.name}
-                </Link>
-              );
-            })}
+            <Link
+              href="/#categories"
+              onClick={(e) => {
+                if (pathname === "/") {
+                  e.preventDefault();
+                  document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className={`text-xs font-bold uppercase tracking-widest hover:text-maroon transition-colors text-ink-muted`}
+            >
+              Categories
+            </Link>
+
+            {parentCategories
+              .filter((cat) => cat.slug !== "handmade" && cat.slug !== "cat-handmade")
+              .map((cat) => {
+                const href = ["jewellery", "clothing"].includes(cat.slug) 
+                  ? `/${cat.slug}` 
+                  : `/shop?category=${cat.slug}`;
+                const isActive = pathname === href || (href.startsWith("/shop") && pathname.includes(`category=${cat.slug}`));
+                return (
+                  <Link
+                    key={cat.id}
+                    href={href}
+                    className={`text-xs font-bold uppercase tracking-widest hover:text-maroon transition-colors ${
+                      isActive ? "text-maroon border-b border-maroon/20 pb-0.5" : "text-ink-muted"
+                    }`}
+                  >
+                    {cat.name}
+                  </Link>
+                );
+              })}
 
             <Link
               href="/shop?filter=new_arrival"
@@ -227,21 +242,37 @@ export default function Header({ onCartClick }: HeaderProps) {
               Home
             </Link>
 
-            {parentCategories.map((cat) => {
-              const href = ["jewellery", "clothing"].includes(cat.slug) 
-                ? `/${cat.slug}` 
-                : `/shop?category=${cat.slug}`;
-              return (
-                <Link
-                  key={cat.id}
-                  href={href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
-                >
-                  {cat.name}
-                </Link>
-              );
-            })}
+            <Link
+              href="/#categories"
+              onClick={(e) => {
+                setMobileMenuOpen(false);
+                if (pathname === "/") {
+                  e.preventDefault();
+                  document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
+            >
+              Categories
+            </Link>
+
+            {parentCategories
+              .filter((cat) => cat.slug !== "handmade" && cat.slug !== "cat-handmade")
+              .map((cat) => {
+                const href = ["jewellery", "clothing"].includes(cat.slug) 
+                  ? `/${cat.slug}` 
+                  : `/shop?category=${cat.slug}`;
+                return (
+                  <Link
+                    key={cat.id}
+                    href={href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
+                  >
+                    {cat.name}
+                  </Link>
+                );
+              })}
 
             <Link
               href="/shop?filter=new_arrival"

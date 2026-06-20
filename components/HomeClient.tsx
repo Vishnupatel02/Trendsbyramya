@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Star, Heart, ShoppingBag, ShieldCheck, Award, MessageSquare, BadgePercent, Sparkles, Instagram, AlertTriangle } from "lucide-react";
+import { ArrowRight, Star, Heart, ShoppingBag, ShieldCheck, Award, MessageSquare, BadgePercent, Sparkles, Instagram, AlertTriangle, Mail, Clock } from "lucide-react";
 import { Product, Category, InstagramPost, SiteConfig, Review } from "@/lib/types";
 import { createContactEnquiryAction } from "@/lib/actions";
 import Header from "./Header";
@@ -103,19 +103,14 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
   );
 
   // Group products by badges
-  const bestSellers = products.filter((p) => p.badge === "bestseller").slice(0, 4);
-  const newArrivals = products.filter((p) => p.badge === "new_arrival").slice(0, 4);
   const trendingProducts = products.filter((p) => p.badge === "trending").slice(0, 4);
 
   // Fallbacks if no products are matching specific badges
-  const displayBestSellers = bestSellers.length > 0 ? bestSellers : products.slice(0, 4);
-  const displayNewArrivals = newArrivals.length > 0 ? newArrivals : products.slice(4, 8);
   const displayTrending = trendingProducts.length > 0 ? trendingProducts : products.slice(2, 6);
 
-  // Sample Testimonials - Removed in favor of real database reviews
-  const testimonials = [];
-
   const cleanPhone = siteConfig.whatsapp_number.replace(/[^0-9+]/g, "");
+
+  const parentCategories = categories.filter((c) => c.parent_type === "root");
 
   return (
     <>
@@ -125,18 +120,8 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
       <main className="flex-grow pt-20">
         {/* 1. HERO SECTION */}
         <section className="relative bg-ivory min-h-[85vh] flex items-center overflow-hidden border-b border-maroon/5 py-12 md:py-24">
-          {/* Background Image for Mobile and Desktop (Mobile Image Fix) */}
-          <div className="absolute inset-0 lg:left-1/2 lg:right-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-r from-ivory via-ivory/80 to-ivory/40 lg:via-transparent lg:to-transparent z-10" />
-            <img
-              src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=1200&q=80"
-              alt="Premium Jewelry Collection"
-              className="w-full h-full object-cover object-center scale-105 opacity-25 lg:opacity-100 transition-opacity duration-500"
-            />
-          </div>
-
-          {/* Transparent Watermark Logo */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-[0.025] pointer-events-none select-none w-[320px] h-[320px] sm:w-[500px] sm:h-[500px]">
+          {/* Transparent Watermark Logo - Center-Right placement */}
+          <div className="absolute right-4 md:right-[10%] lg:right-[15%] top-1/2 -translate-y-1/2 z-0 opacity-[0.06] pointer-events-none select-none w-[280px] h-[280px] sm:w-[500px] sm:h-[500px] lg:w-[580px] lg:h-[580px]">
             <img
               src="/logo.jpg"
               alt=""
@@ -191,7 +176,74 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
           </div>
         </section>
 
-        {/* HOW TO ORDER SECTION */}
+        {/* 2. PARENT CATEGORIES SECTION (Featured Collections) */}
+        <section id="categories" className="py-20 bg-white border-b border-maroon/5 scroll-mt-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-xl mx-auto mb-16">
+              <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Our Categories</span>
+              <h2 className="font-display text-3xl sm:text-4xl font-bold text-ink mt-2">Featured Collections</h2>
+              <p className="text-xs text-ink-muted mt-3">Browse our curated selections of premium jewelry, clothing, and more.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {parentCategories.map((c) => {
+                const href = ["jewellery", "clothing"].includes(c.slug) 
+                  ? `/${c.slug}` 
+                  : `/shop?category=${c.slug}`;
+                return (
+                  <div key={c.id} className="group relative rounded-2xl overflow-hidden aspect-[16/10] shadow-md border border-maroon/5 bg-ivory">
+                    <div className="absolute inset-0 bg-ink/30 z-10 transition-colors group-hover:bg-ink/40" />
+                    <img
+                      src={c.image_url || "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80"}
+                      alt={c.name}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    
+                    <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white">
+                      <h3 className="font-display text-2xl font-bold mb-3">{c.name}</h3>
+                      <Link
+                        href={href}
+                        className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gold hover:text-white transition-colors"
+                      >
+                        Explore Collection <ArrowRight className="w-4 h-4 ml-1.5" />
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* 3. TRENDING PRODUCTS SECTION */}
+        <section className="py-20 bg-ivory border-b border-maroon/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
+              <div>
+                <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Popular Choice</span>
+                <h2 className="font-display text-3xl font-bold text-ink mt-1">Trending Products</h2>
+              </div>
+              <Link
+                href="/shop?filter=trending"
+                className="text-xs font-bold uppercase tracking-widest text-maroon hover:text-maroon-dark transition-colors flex items-center gap-1.5"
+              >
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              {displayTrending.map((prod) => (
+                <ProductCard
+                  key={prod.id}
+                  product={prod}
+                  categoryName={categories.find((c) => c.id === prod.category_id)?.name}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 4. HOW TO ORDER SECTION */}
         <section id="how-to-order" className="py-16 bg-white border-b border-maroon/5 scroll-mt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-xl mx-auto mb-12">
@@ -206,7 +258,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                 {
                   step: "01",
                   title: "Select Product",
-                  desc: "Browse our catalog, pick your favorite items, and click the 'WhatsApp' button on the product card or page.",
+                  desc: "Browse our catalog, pick your favorite items, and click the 'Order on WhatsApp' button on the product card or page.",
                   icon: (
                     <svg className="w-6 h-6 text-maroon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -259,173 +311,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
           </div>
         </section>
 
-        {/* 2. FEATURED COLLECTIONS */}
-        <section className="py-20 bg-white border-b border-maroon/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-xl mx-auto mb-16">
-              <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Our Categories</span>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-ink mt-2">Featured Collections</h2>
-              <p className="text-xs text-ink-muted mt-3">Browse our curated selections of premium jewelry and clothing.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Jewelry Collection Card */}
-              <div className="group relative rounded-2xl overflow-hidden aspect-[16/10] shadow-md border border-maroon/5 bg-ivory">
-                <div className="absolute inset-0 bg-ink/30 z-10 transition-colors group-hover:bg-ink/40" />
-                <img
-                  src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80"
-                  alt="Jewellery Collection"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                
-                <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white">
-                  <h3 className="font-display text-2xl font-bold mb-3">Jewellery Collection</h3>
-                  <Link
-                    href="/jewellery"
-                    className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gold hover:text-white transition-colors"
-                  >
-                    Explore Jewellery <ArrowRight className="w-4 h-4 ml-1.5" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Clothing Collection Card */}
-              <div className="group relative rounded-2xl overflow-hidden aspect-[16/10] shadow-md border border-maroon/5 bg-ivory">
-                <div className="absolute inset-0 bg-ink/30 z-10 transition-colors group-hover:bg-ink/40" />
-                <img
-                  src="https://images.unsplash.com/photo-1583391733981-5c55a0b0e0f0?w=800&q=80"
-                  alt="Clothing Collection"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-
-                <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white">
-                  <h3 className="font-display text-2xl font-bold mb-3">Clothing Collection</h3>
-                  <Link
-                    href="/clothing"
-                    className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gold hover:text-white transition-colors"
-                  >
-                    Explore Clothing <ArrowRight className="w-4 h-4 ml-1.5" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 3. BEST SELLERS SECTION */}
-        <section className="py-20 bg-ivory border-b border-maroon/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
-              <div>
-                <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Most Loved</span>
-                <h2 className="font-display text-3xl font-bold text-ink mt-1">Our Best Sellers</h2>
-              </div>
-              <Link
-                href="/shop?filter=bestseller"
-                className="text-xs font-bold uppercase tracking-widest text-maroon hover:text-maroon-dark transition-colors flex items-center gap-1.5"
-              >
-                View All <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              {displayBestSellers.map((prod) => (
-                <ProductCard
-                  key={prod.id}
-                  product={prod}
-                  categoryName={categories.find((c) => c.id === prod.category_id)?.name}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 4. NEW ARRIVALS SECTION */}
-        <section className="py-20 bg-white border-b border-maroon/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
-              <div>
-                <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Fresh Off The Craft</span>
-                <h2 className="font-display text-3xl font-bold text-ink mt-1">New Arrivals</h2>
-              </div>
-              <Link
-                href="/shop?filter=new_arrival"
-                className="text-xs font-bold uppercase tracking-widest text-maroon hover:text-maroon-dark transition-colors flex items-center gap-1.5"
-              >
-                View All <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              {displayNewArrivals.map((prod) => (
-                <ProductCard
-                  key={prod.id}
-                  product={prod}
-                  categoryName={categories.find((c) => c.id === prod.category_id)?.name}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 5. TRENDING PRODUCTS SECTION */}
-        <section className="py-20 bg-ivory border-b border-maroon/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
-              <div>
-                <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Popular Choice</span>
-                <h2 className="font-display text-3xl font-bold text-ink mt-1">Trending Products</h2>
-              </div>
-              <Link
-                href="/shop?filter=trending"
-                className="text-xs font-bold uppercase tracking-widest text-maroon hover:text-maroon-dark transition-colors flex items-center gap-1.5"
-              >
-                View All <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              {displayTrending.map((prod) => (
-                <ProductCard
-                  key={prod.id}
-                  product={prod}
-                  categoryName={categories.find((c) => c.id === prod.category_id)?.name}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 6. WHY CHOOSE US SECTION */}
-        <section className="py-20 bg-white border-b border-maroon/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-xl mx-auto mb-16">
-              <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Our Core Values</span>
-              <h2 className="font-display text-3xl font-bold text-ink mt-2">Why Choose Us</h2>
-              <p className="text-xs text-ink-muted mt-3">We believe in making every shopping experience delightful, personal, and premium.</p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
-              {[
-                { title: "Handpicked Collections", desc: "Every design is curated with close attention to detail and traditional essence.", icon: Sparkles },
-                { title: "Premium Quality", desc: "High-grade materials, fine gold polish, and durable knottings that last long.", icon: Award },
-                { title: "Affordable Pricing", desc: "Honest boutique prices, removing heavy middleman markup costs.", icon: BadgePercent },
-                { title: "WhatsApp Support", desc: "Reach out for sizing support, color matching, and custom adjustments.", icon: MessageSquare },
-                { title: "Trusted Service", desc: "Secure packing, prompt replies, and dedicated customer care since 2018.", icon: ShieldCheck },
-              ].map((val, idx) => (
-                <div key={idx} className="flex flex-col items-center text-center p-4 bg-ivory/40 rounded-xl border border-maroon/5">
-                  <div className="p-3 bg-maroon/5 rounded-full text-maroon mb-4">
-                    <val.icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-display text-sm font-bold text-ink mb-2">{val.title}</h3>
-                  <p className="text-[11px] text-ink-muted leading-relaxed">{val.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 7. CUSTOMER REVIEWS SECTION */}
+        {/* 5. CUSTOMER REVIEWS SECTION */}
         <section className="py-20 bg-ivory border-b border-maroon/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-xl mx-auto mb-16">
@@ -483,117 +369,82 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
           </div>
         </section>
 
-        {/* 8. INSTAGRAM SECTION */}
-        <section className="py-20 bg-white border-b border-maroon/5">
+        {/* 6. CONTACT US SECTION */}
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-xl mx-auto mb-12">
-              <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Instagram</span>
-              <h2 className="font-display text-3xl font-bold text-ink mt-2">Follow Our Clothing Journey</h2>
-              <p className="text-xs text-ink-muted mt-3">Stay updated with our daily designs, customer styling reels, and store updates.</p>
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+              {/* Left Column (5 cols) */}
+              <div className="lg:col-span-5 space-y-6">
+                <div>
+                  <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Let&apos;s Design Together</span>
+                  <h2 className="font-display text-3xl font-bold text-ink mt-2">Get In Touch</h2>
+                  <div className="w-12 h-0.5 bg-maroon mt-3"></div>
+                </div>
+                <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
+                  We specialize in customized blackbeads (mangalsutra), bridal necklace coordinates, and tailored kurtis. Get in touch directly via our communication channels or submit the enquiry form to chat on WhatsApp.
+                </p>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-              {instagramFeed.map((post) => (
-                <a
-                  key={post.id}
-                  href={post.post_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative aspect-square bg-ivory rounded-xl overflow-hidden shadow-sm"
-                >
-                  <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover:opacity-100 z-10 transition-opacity flex items-center justify-center text-white p-4">
-                    <div className="flex flex-col items-center text-center">
-                      <Instagram className="w-6 h-6 mb-2" />
-                      <p className="text-[10px] font-semibold tracking-wider uppercase">View Post</p>
+                {/* Direct Links */}
+                <div className="space-y-4 pt-4">
+                  {/* WhatsApp Info */}
+                  <div className="flex items-center gap-4 p-4 bg-green-50/50 border border-green-100 rounded-xl">
+                    <div className="p-2.5 bg-green-100 rounded-full text-green-700">
+                      <MessageSquare className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs uppercase font-bold text-green-800 tracking-wider">WhatsApp Business</h4>
+                      <p className="text-xs font-bold text-ink mt-0.5">{siteConfig.whatsapp_number}</p>
                     </div>
                   </div>
-                  <img
-                    src={post.image_url}
-                    alt={post.caption || "Instagram Post"}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </a>
-              ))}
-            </div>
 
-            <div className="text-center">
-              <a
-                href={siteConfig.instagram_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-full border border-maroon/20 hover:bg-maroon hover:text-white px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-maroon transition-all"
-              >
-                <Instagram className="w-4 h-4 mr-2" /> Follow @trends_by_ramya
-              </a>
-            </div>
-          </div>
-        </section>
-
-        {/* 9. ABOUT US & CONTACT SECTION */}
-        <section id="about" className="py-20 bg-ivory scroll-mt-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              {/* About Us + Business Details (5 cols) */}
-              <div className="lg:col-span-5 space-y-8">
-                <div className="space-y-4">
-                  <span className="text-xs uppercase font-bold text-gold tracking-[0.25em]">Our Story</span>
-                  <h2 className="font-display text-3xl sm:text-4xl font-bold text-ink">
-                    Where Tradition Meets <br />
-                    <span className="text-maroon">Modern Clothing</span>
-                  </h2>
-                  <p className="text-xs text-ink-muted leading-relaxed">
-                    Welcome to Trends by Ramya, where tradition meets modern clothing. We carefully curate handcrafted jewellery, blackbeads, elegant kurtis, and stylish clothing designed to make every woman feel confident and beautiful. Our goal is to bring quality, style, and affordability together in one destination.
-                  </p>
-                  <p className="text-xs text-ink-muted leading-relaxed">
-                    As a women-led brand, we take pride in intentional, slow craftsmanship. Each jewelry item is individually hand-knotted, polished, and checked. No cheap mass assembly lines—just genuine beauty customized to your styling preferences.
-                  </p>
-                </div>
-
-                {/* Business Details Card */}
-                <div className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm space-y-4">
-                  <h3 className="font-display text-sm font-bold text-ink border-b border-maroon/10 pb-2">Business Details</h3>
-                  <div className="space-y-3.5 text-xs text-ink-muted">
-                    {/* WhatsApp */}
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-green-50 rounded-lg text-green-600">
-                        <WhatsAppIcon className="w-4 h-4 fill-current" />
-                      </div>
-                      <div>
-                        <p className="text-[9px] uppercase font-bold tracking-widest text-ink-muted">WhatsApp Support</p>
-                        <a href={`https://wa.me/${cleanPhone}`} target="_blank" rel="noopener noreferrer" className="font-bold text-ink hover:text-maroon transition-colors">
-                          {siteConfig.whatsapp_number}
-                        </a>
-                      </div>
+                  {/* Email Info */}
+                  <div className="flex items-center gap-4 p-4 bg-maroon/5 border border-maroon/10 rounded-xl">
+                    <div className="p-2.5 bg-maroon/10 rounded-full text-maroon">
+                      <Mail className="w-5 h-5" />
                     </div>
-                    {/* Instagram */}
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-pink-50 rounded-lg">
-                        <InstagramColoredIcon className="w-4 h-4" />
+                    <div>
+                      <h4 className="text-xs uppercase font-bold text-maroon tracking-wider">Email Support</h4>
+                      <p className="text-xs font-bold text-ink mt-0.5">{siteConfig.email_address}</p>
+                    </div>
+                  </div>
+
+                  {/* Consultation Hours & Address Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    {/* Consultation Hours */}
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-gray-50 rounded-lg text-ink-muted mt-0.5">
+                        <Clock className="w-4 h-4" />
                       </div>
                       <div>
-                        <p className="text-[9px] uppercase font-bold tracking-widest text-ink-muted">Instagram Profile</p>
-                        <a href={siteConfig.instagram_url} target="_blank" rel="noopener noreferrer" className="font-bold text-ink hover:text-maroon transition-colors">
-                          @trends_by_ramya
-                        </a>
+                        <p className="text-[9px] uppercase font-bold tracking-widest text-ink-muted">Consultation Hours</p>
+                        <p className="font-semibold text-ink leading-relaxed">
+                          Mon - Sat: 10:00 AM - 8:00 PM <br />
+                          <span className="text-gold-dark">Closed on Sundays</span>
+                        </p>
                       </div>
                     </div>
                     {/* Delivery Info */}
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-gold/10 rounded-lg text-gold-dark mt-0.5">
+                      <div className="p-2 bg-gray-50 rounded-lg text-ink-muted mt-0.5">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                         </svg>
                       </div>
                       <div>
-                        <p className="text-[9px] uppercase font-bold tracking-widest text-ink-muted">Delivery Information</p>
+                        <p className="text-[9px] uppercase font-bold tracking-widest text-ink-muted">Delivery Locations</p>
                         <p className="font-semibold text-ink leading-relaxed">
-                          Worldwide shipping. Free delivery across India on orders above ₹1500. Dispatched in 2-3 business days.
+                          Shipping Worldwide <br />
+                          <span className="text-gold-dark">Free Shipping inside India</span>
                         </p>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Address & UPI Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-maroon/5">
                     {/* Address */}
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-maroon/5 rounded-lg text-maroon mt-0.5">
+                      <div className="p-2 bg-gray-50 rounded-lg text-ink-muted mt-0.5">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -706,8 +557,4 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
       <Footer />
     </>
   );
-
-  function handleCategoryClick(slug: string) {
-    window.location.href = `/shop?category=${slug}`;
-  }
 }

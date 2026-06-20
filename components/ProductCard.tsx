@@ -151,10 +151,10 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
               onClick={(e) => {
                 e.stopPropagation();
               }}
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-full py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider border border-green-500 bg-white hover:bg-green-50 text-green-600 transition-all duration-300 shadow-sm hover:scale-[1.02] cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-1 rounded-full py-2.5 px-2 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider border border-green-500 bg-white hover:bg-green-50 text-green-600 transition-all duration-300 shadow-sm hover:scale-[1.02] cursor-pointer text-center"
             >
-              <WhatsAppIcon className="w-3.5 h-3.5 fill-current" />
-              WhatsApp
+              <WhatsAppIcon className="w-3.5 h-3.5 fill-current flex-shrink-0" />
+              <span>Order on WhatsApp</span>
             </a>
           </div>
         </div>
