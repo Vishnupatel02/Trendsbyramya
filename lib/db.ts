@@ -141,8 +141,7 @@ function mapReviewToDB(review: Omit<Review, 'id' | 'created_at'> & { id?: string
    ============================================================================ */
 
 export async function getCategories(): Promise<Category[]> {
-  const client = await getSupabaseClient();
-  const { data, error } = await client.from('categories').select('*').order('name');
+  const { data, error } = await supabase.from('categories').select('*').order('name');
   if (error) {
     console.error('Supabase getCategories error:', error);
     return [];
@@ -278,8 +277,7 @@ export async function updateCategory(id: string, updates: Partial<Category>): Pr
    ============================================================================ */
 
 export async function getProducts(): Promise<Product[]> {
-  const client = await getSupabaseClient();
-  const { data, error } = await client.from('products').select('*').order('created_at', { ascending: false });
+  const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
   if (error) {
     console.error('Supabase getProducts error:', error);
     return [];
@@ -290,8 +288,7 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-  const client = await getSupabaseClient();
-  const { data, error } = await client.from('products').select('*').eq('id', id).single();
+  const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
   if (error) {
     console.error(`Supabase getProductById error for ${id}:`, error);
     return null;
@@ -453,8 +450,7 @@ export async function deleteInstagramPost(id: string): Promise<boolean> {
    ============================================================================ */
 
 export async function getReviews(): Promise<Review[]> {
-  const client = await getSupabaseClient();
-  const { data, error } = await client.from('reviews').select('*').order('created_at', { ascending: false });
+  const { data, error } = await supabase.from('reviews').select('*').order('created_at', { ascending: false });
   if (error) {
     console.error('Supabase getReviews error:', error);
     return [];
