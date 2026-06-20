@@ -121,11 +121,11 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
         {/* 1. HERO SECTION */}
         <section className="relative bg-ivory min-h-[85vh] flex items-center overflow-hidden border-b border-maroon/5 py-12 md:py-24">
           {/* Transparent Watermark Logo - Centered behind hero content */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-[0.11] pointer-events-none select-none w-[300px] h-[300px] sm:w-[520px] sm:h-[520px] lg:w-[600px] lg:h-[600px]">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-[0.60] pointer-events-none select-none w-[300px] h-[300px] sm:w-[520px] sm:h-[520px] lg:w-[600px] lg:h-[600px]">
             <img
               src="/logo.jpg"
               alt=""
-              className="w-full h-full object-contain rounded-full mix-blend-multiply filter grayscale blur-[2px]"
+              className="w-full h-full object-contain rounded-full mix-blend-multiply filter grayscale"
             />
           </div>
 
