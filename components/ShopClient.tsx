@@ -118,6 +118,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
           p.description.toLowerCase().includes(query)
       );
     }
+    const searchFilteredCount = result.length;
 
     // 2. Category Filter
     let categoryFiltered = [...result];
@@ -162,7 +163,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                                 return cleanSlug === cleanProductCat;
                               });
 
-            console.log(`Product Comparison:`, {
+            console.log(`Product Comparison (Parent):`, {
               "product.id": p.id,
               "product.name": p.name,
               "product.category_id": p.category_id,
@@ -186,7 +187,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
 
             const matchedCat = categories.find(c => c.id === p.category_id || c.slug === p.category_id);
             
-            console.log(`Product Comparison:`, {
+            console.log(`Product Comparison (Sub):`, {
               "product.id": p.id,
               "product.name": p.name,
               "product.category_id": p.category_id,
@@ -228,6 +229,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
       }
     }
     result = [...categoryFiltered];
+    const categoryFilteredCount = result.length;
 
     // 3. Badge Filter
     if (selectedBadge !== "all") {
@@ -237,14 +239,17 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
         result = result.filter((p) => p.badge === selectedBadge);
       }
     }
+    const badgeFilteredCount = result.length;
 
     // 4. Availability Filter
     if (selectedAvailability !== "all") {
       result = result.filter((p) => p.status === selectedAvailability);
     }
+    const availabilityFilteredCount = result.length;
 
     // 5. Price Filter
     result = result.filter((p) => p.price <= maxPrice);
+    const priceFilteredCount = result.length;
 
     // 6. Sorting
     if (sortBy === "price_asc") {
@@ -255,8 +260,13 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
       result.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
     }
 
+    console.log("=== FILTER PIPELINE SUMMARY ===");
     console.log("All Products:", products.length);
-    console.log("Category Filtered:", categoryFiltered.length);
+    console.log("Search Filtered:", searchFilteredCount);
+    console.log("Category Filtered:", categoryFilteredCount);
+    console.log("Badge Filtered (Badge State:", selectedBadge, "):", badgeFilteredCount);
+    console.log("Availability Filtered (Availability State:", selectedAvailability, "):", availabilityFilteredCount);
+    console.log("Price Filtered (Max Price State:", maxPrice, "):", priceFilteredCount);
     console.log("Final Displayed:", result.length);
 
     return result;
