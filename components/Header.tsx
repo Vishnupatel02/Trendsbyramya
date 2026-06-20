@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingBag, Heart, Menu, X, Instagram } from "lucide-react";
+import { ShoppingBag, Heart, Instagram } from "lucide-react";
 import { useCart } from "@/lib/context/CartContext";
 import { fetchSiteConfig, fetchCategories } from "@/lib/actions";
 import { SiteConfig, Category } from "@/lib/types";
@@ -16,7 +16,6 @@ export default function Header({ onCartClick }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { cartCount, wishlist } = useCart();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [siteConfig, setSiteConfig] = useState<SiteConfig>({
     whatsapp_number: "+91 97052 82684",
@@ -51,11 +50,6 @@ export default function Header({ onCartClick }: HeaderProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu when pathname changes
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [pathname]);
-
   const defaultCartClick = () => {
     router.push("/cart");
   };
@@ -63,28 +57,22 @@ export default function Header({ onCartClick }: HeaderProps) {
   const activeCartClick = onCartClick || defaultCartClick;
 
   return (
-    <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-          scrolled ? "glass-header shadow-md py-2" : "bg-transparent py-4 border-b border-maroon/5"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-ink hover:text-maroon transition-colors"
-            aria-label="Toggle Menu"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-
+    <header
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        scrolled 
+          ? "glass-header shadow-md py-1.5 md:py-2" 
+          : "bg-ivory/95 md:bg-transparent py-2.5 md:py-4 border-b border-maroon/5"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-2 md:gap-0">
+        {/* Main Header Top Row (Logo, Navigation on desktop, Action Icons) */}
+        <div className="flex items-center justify-between w-full">
           {/* Logo Branding */}
           <Link href="/" className="flex items-center group">
             <img
               src="/logo.jpg"
               alt="Trends by Ramya Logo"
-              className="h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              className="h-10 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
 
@@ -107,7 +95,7 @@ export default function Header({ onCartClick }: HeaderProps) {
                   document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" });
                 }
               }}
-              className={`text-xs font-bold uppercase tracking-widest hover:text-maroon transition-colors text-ink-muted`}
+              className="text-xs font-bold uppercase tracking-widest hover:text-maroon transition-colors text-ink-muted"
             >
               Categories
             </Link>
@@ -201,105 +189,93 @@ export default function Header({ onCartClick }: HeaderProps) {
             </a>
           </div>
         </div>
-      </header>
 
-      {/* Mobile Menu Panel */}
-      <div
-        className={`fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
-          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
-        onClick={() => setMobileMenuOpen(false)}
-      >
-        <div
-          className={`fixed top-0 bottom-0 left-0 w-4/5 max-w-sm bg-ivory shadow-2xl p-6 transition-transform duration-300 ${
-            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center justify-between mb-8 border-b border-maroon/10 pb-4">
-            <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-              <img
-                src="/logo.jpg"
-                alt="Trends by Ramya Logo"
-                className="h-12 w-auto object-contain"
-              />
-            </Link>
-            <button
-              onClick={() => setMobileMenuOpen(false)}
-              className="p-2 text-ink-muted hover:text-maroon transition-colors"
-              aria-label="Close Menu"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
+        {/* Mobile Horizontal Swipe Navigation Bar (Directly below Logo/Icons row) */}
+        <nav className="md:hidden flex items-center overflow-x-auto whitespace-nowrap scrollbar-none py-1.5 border-t border-maroon/5 gap-6 scroll-smooth select-none touch-pan-x">
+          <Link
+            href="/"
+            className={`text-xs font-bold uppercase tracking-wider transition-colors py-1.5 px-0.5 ${
+              pathname === "/" 
+                ? "text-maroon border-b-2 border-maroon pb-0.5" 
+                : "text-ink-muted"
+            }`}
+          >
+            Home
+          </Link>
 
-          <div className="flex flex-col space-y-4">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
-            >
-              Home
-            </Link>
+          <Link
+            href="/#categories"
+            onClick={(e) => {
+              if (pathname === "/") {
+                e.preventDefault();
+                document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+            className={`text-xs font-bold uppercase tracking-wider transition-colors py-1.5 px-0.5 ${
+              pathname === "/#categories" || (pathname === "/" && typeof window !== "undefined" && window.location.hash === "#categories")
+                ? "text-maroon border-b-2 border-maroon pb-0.5" 
+                : "text-ink-muted"
+            }`}
+          >
+            Categories
+          </Link>
 
-            <Link
-              href="/#categories"
-              onClick={(e) => {
-                setMobileMenuOpen(false);
-                if (pathname === "/") {
-                  e.preventDefault();
-                  document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-              className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
-            >
-              Categories
-            </Link>
+          {parentCategories
+            .filter((cat) => cat.slug !== "handmade" && cat.slug !== "cat-handmade")
+            .map((cat) => {
+              const href = ["jewellery", "clothing"].includes(cat.slug) 
+                ? `/${cat.slug}` 
+                : `/shop?category=${cat.slug}`;
+              const isActive = pathname === href || (href.startsWith("/shop") && pathname.includes(`category=${cat.slug}`));
+              return (
+                <Link
+                  key={cat.id}
+                  href={href}
+                  className={`text-xs font-bold uppercase tracking-wider transition-colors py-1.5 px-0.5 ${
+                    isActive 
+                      ? "text-maroon border-b-2 border-maroon pb-0.5" 
+                      : "text-ink-muted"
+                  }`}
+                >
+                  {cat.name}
+                </Link>
+              );
+            })}
 
-            {parentCategories
-              .filter((cat) => cat.slug !== "handmade" && cat.slug !== "cat-handmade")
-              .map((cat) => {
-                const href = ["jewellery", "clothing"].includes(cat.slug) 
-                  ? `/${cat.slug}` 
-                  : `/shop?category=${cat.slug}`;
-                return (
-                  <Link
-                    key={cat.id}
-                    href={href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
-                  >
-                    {cat.name}
-                  </Link>
-                );
-              })}
+          <Link
+            href="/shop?filter=new_arrival"
+            className={`text-xs font-bold uppercase tracking-wider transition-colors py-1.5 px-0.5 ${
+              pathname.includes("filter=new_arrival") 
+                ? "text-maroon border-b-2 border-maroon pb-0.5" 
+                : "text-ink-muted"
+            }`}
+          >
+            New Arrivals
+          </Link>
 
-            <Link
-              href="/shop?filter=new_arrival"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
-            >
-              New Arrivals
-            </Link>
+          <Link
+            href="/about"
+            className={`text-xs font-bold uppercase tracking-wider transition-colors py-1.5 px-0.5 ${
+              pathname === "/about" 
+                ? "text-maroon border-b-2 border-maroon pb-0.5" 
+                : "text-ink-muted"
+            }`}
+          >
+            About Us
+          </Link>
 
-            <Link
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
-            >
-              About Us
-            </Link>
-
-            <Link
-              href="/contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
-            >
-              Contact Us
-            </Link>
-          </div>
-        </div>
+          <Link
+            href="/contact"
+            className={`text-xs font-bold uppercase tracking-wider transition-colors py-1.5 px-0.5 ${
+              pathname === "/contact" 
+                ? "text-maroon border-b-2 border-maroon pb-0.5" 
+                : "text-ink-muted"
+            }`}
+          >
+            Contact Us
+          </Link>
+        </nav>
       </div>
-    </>
+    </header>
   );
 }
