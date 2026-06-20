@@ -121,31 +121,31 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
         {/* 1. HERO SECTION */}
         <section className="relative bg-ivory min-h-[85vh] flex items-center overflow-hidden border-b border-maroon/5 py-12 md:py-24">
           {/* Redesigned Watermark Logo - Gown Silhouette and Brand Text */}
-          <div className="absolute left-1/2 top-[22%] sm:top-1/2 lg:left-auto lg:right-[2%] -translate-x-1/2 lg:translate-x-0 -translate-y-1/2 z-0 pointer-events-none select-none w-[350px] h-[350px] sm:w-[580px] sm:h-[580px] lg:w-[800px] lg:h-[800px] overflow-visible">
+          <div className="absolute left-1/2 top-[22%] sm:top-1/2 lg:left-[55%] lg:right-auto -translate-x-1/2 lg:translate-x-0 -translate-y-1/2 z-0 pointer-events-none select-none w-[350px] h-[350px] sm:w-[580px] sm:h-[580px] lg:w-[800px] lg:h-[800px] overflow-visible">
             <svg viewBox="0 0 500 500" className="w-full h-full text-maroon pointer-events-none select-none">
               <defs>
                 <style dangerouslySetInnerHTML={{ __html: `
-                  @import url("https://fonts.googleapis.com/css2?family=Playball&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
+                  @import url("https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
                   .svg-serif-title {
                     font-family: 'Playfair Display', Georgia, serif;
                     font-weight: 800;
-                    letter-spacing: 0.18em;
+                    letter-spacing: 0.22em;
                   }
                   .svg-serif-by {
                     font-family: 'Playfair Display', Georgia, serif;
                     font-style: italic;
                   }
                   .svg-cursive-name {
-                    font-family: 'Playball', cursive;
+                    font-family: 'Great Vibes', cursive;
                   }
                 ` }} />
               </defs>
               
               {/* Gown Hanger */}
-              <path d="M 160,80 C 160,65 172,65 172,55 C 172,45 160,45 160,55" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="opacity-45" />
-              <path d="M 125,90 L 160,78 L 195,90" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="opacity-45" />
+              <path d="M 160,80 C 160,65 172,65 172,55 C 172,45 160,45 160,55" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="opacity-40" />
+              <path d="M 125,90 L 160,78 L 195,90" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="opacity-40" />
 
-              {/* Gown Dress Silhouette */}
+              {/* Gown Dress Silhouette (Sweetheart Neckline & Straps) */}
               <path 
                 d="M 148,90 
                    C 148,90 143,125 143,145 
@@ -168,13 +168,13 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
 
               {/* Typography overlay */}
               {/* Large serif "TRENDS" */}
-              <text x="175" y="195" className="svg-serif-title text-maroon" fontSize="58" fill="currentColor" opacity="0.30">TRENDS</text>
+              <text x="165" y="195" className="svg-serif-title text-maroon" fontSize="58" fill="currentColor" opacity="0.30">TRENDS</text>
               
               {/* Elegant italicized "By" */}
-              <text x="390" y="225" className="svg-serif-by text-maroon" fontSize="24" fill="currentColor" opacity="0.45">By</text>
+              <text x="380" y="225" className="svg-serif-by text-maroon" fontSize="24" fill="currentColor" opacity="0.45">By</text>
               
               {/* Large cursive script "Ramya" */}
-              <text x="195" y="305" className="svg-cursive-name text-maroon" fontSize="88" fill="currentColor" opacity="0.55">Ramya</text>
+              <text x="185" y="305" className="svg-cursive-name text-maroon" fontSize="96" fill="currentColor" opacity="0.55">Ramya</text>
             </svg>
           </div>
 
