@@ -43,10 +43,13 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
   const handleCategoryClick = (idOrSlug: string) => {
     const cat = categories.find((c) => c.id === idOrSlug || c.slug === idOrSlug);
     const slug = cat ? cat.slug : idOrSlug;
+    const targetId = cat ? cat.id : idOrSlug;
+    setSelectedCategory(targetId);
     updateQueryParam("category", slug);
   };
 
   const handleBadgeClick = (badgeId: string) => {
+    setSelectedBadge(badgeId);
     updateQueryParam("filter", badgeId);
   };
 
