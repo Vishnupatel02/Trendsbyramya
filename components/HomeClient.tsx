@@ -121,8 +121,8 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
         {/* 1. HERO SECTION */}
         <section className="relative bg-ivory min-h-[85vh] flex items-center overflow-hidden border-b border-maroon/5 py-12 md:py-24">
           {/* Redesigned Watermark Logo - Gown Silhouette and Brand Text */}
-          {/* Redesigned Watermark Logo - Separate SVG Asset */}
-          <div className="absolute left-1/2 top-[22%] sm:top-1/2 lg:left-[55%] lg:right-auto -translate-x-1/2 lg:translate-x-0 -translate-y-1/2 z-0 pointer-events-none select-none w-[350px] h-[350px] sm:w-[580px] sm:h-[580px] lg:w-[800px] lg:h-[800px] opacity-[0.50] overflow-visible">
+          {/* Refined Watermark Logo - Separate SVG Asset */}
+          <div className="absolute left-1/2 top-[20%] sm:top-1/2 lg:left-auto lg:right-[2%] -translate-x-1/2 lg:translate-x-0 -translate-y-1/2 z-0 pointer-events-none select-none w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] lg:w-[700px] lg:h-[700px] opacity-[0.30] overflow-hidden">
             <img
               src="/hero-watermark.svg"
               alt=""
