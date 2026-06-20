@@ -63,8 +63,33 @@ export async function getSupabaseClient(useServiceRole = false) {
  * Maps a Supabase products row to the frontend Product type.
  */
 function mapProductFromDB(row: any, categories: Category[] = []): Product {
-  const matchedCat = categories.find(c => c.slug === row.subcategory || c.id === row.subcategory);
+  const subValue = (row.subcategory || '').toString().trim().toLowerCase();
+  const matchedCat = categories.find(c => {
+    const cSlug = (c.slug || '').toString().trim().toLowerCase();
+    const cId = (c.id || '').toString().trim().toLowerCase();
+    const cName = (c.name || '').toString().trim().toLowerCase();
+    return cSlug === subValue || 
+           cId === subValue || 
+           cName === subValue ||
+           cSlug.replace(/-+$/g, '') === subValue.replace(/-+$/g, '') ||
+           cSlug === subValue.replace(/\s+/g, '-') ||
+           cName === subValue.replace(/-/g, ' ');
+  });
   const categoryId = matchedCat ? matchedCat.id : (row.subcategory || '');
+
+  // Dynamically assign badges for storefront filtering since badge column doesn't exist in Supabase
+  let badge: Product['badge'] = null;
+  const nameLower = (row.name || '').toLowerCase();
+  if (nameLower.includes('saree') || nameLower.includes('sari')) {
+    badge = 'trending';
+  } else if (nameLower.includes('necklace') || nameLower.includes('devi') || nameLower.includes('lakshmi')) {
+    badge = 'new_arrival';
+  } else if (nameLower.includes('kundhan') || nameLower.includes('jadau')) {
+    badge = 'bestseller';
+  } else if (row.status === 'low_stock') {
+    badge = 'limited_stock';
+  }
+
   return {
     id: row.id,
     name: row.name,
@@ -72,7 +97,7 @@ function mapProductFromDB(row: any, categories: Category[] = []): Product {
     price: Number(row.price),
     images: row.image_url ? [row.image_url] : [],
     category_id: categoryId,
-    badge: null,
+    badge,
     status: row.status || (Number(row.stock) === 0 ? 'out_of_stock' : (Number(row.stock) <= 3 ? 'low_stock' : 'in_stock')),
     created_at: row.created_at,
   };

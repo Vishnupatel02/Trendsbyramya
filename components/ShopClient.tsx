@@ -29,18 +29,39 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
   const [maxPrice, setMaxPrice] = useState<number>(5000);
   const [sortBy, setSortBy] = useState<string>("default");
 
+  // Synchronize category or filter parameter to URL
+  const updateQueryParam = (name: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "all") {
+      params.delete(name);
+    } else {
+      params.set(name, value);
+    }
+    router.push(`/shop?${params.toString()}`);
+  };
+
+  const handleCategoryClick = (idOrSlug: string) => {
+    const cat = categories.find((c) => c.id === idOrSlug || c.slug === idOrSlug);
+    const slug = cat ? cat.slug : idOrSlug;
+    updateQueryParam("category", slug);
+  };
+
+  const handleBadgeClick = (badgeId: string) => {
+    updateQueryParam("filter", badgeId);
+  };
+
   // Read URL query parameters on mount or change
   useEffect(() => {
     const categoryParam = searchParams.get("category");
     const filterParam = searchParams.get("filter");
 
     if (categoryParam) {
-      // Find category by slug
-      const foundCat = categories.find((c) => c.slug === categoryParam);
+      // Find category by slug or ID
+      const foundCat = categories.find((c) => c.slug === categoryParam || c.id === categoryParam);
       if (foundCat) {
         setSelectedCategory(foundCat.id);
       } else {
-        setSelectedCategory("all");
+        setSelectedCategory(categoryParam);
       }
     } else {
       setSelectedCategory("all");
@@ -97,22 +118,57 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
 
     // 2. Category Filter
     if (selectedCategory !== "all") {
-      const selectedCatObj = categories.find(c => c.id === selectedCategory);
+      const selectedCatObj = categories.find(
+        (c) => c.id === selectedCategory || c.slug === selectedCategory
+      );
+
       if (selectedCatObj) {
         if (selectedCatObj.parent_type === "root") {
           // Parent category selected: show products from all its subcategories
-          const subcatIds = categories
-            .filter(c => c.parent_type === selectedCatObj.slug)
-            .map(c => c.id);
-          // Also include the parent category itself just in case products are mapped directly
+          const subcategories = categories.filter(
+            (c) => c.parent_type.trim().toLowerCase() === selectedCatObj.slug.trim().toLowerCase()
+          );
+          
+          const subcatIds = subcategories.map((c) => c.id);
+          const subcatSlugs = subcategories.map((c) => c.slug);
+          
+          // Also include the parent category itself just in case
           subcatIds.push(selectedCatObj.id);
-          result = result.filter((p) => subcatIds.includes(p.category_id));
+          subcatSlugs.push(selectedCatObj.slug);
+
+          result = result.filter((p) => {
+            const pCatId = (p.category_id || "").trim().toLowerCase();
+            return (
+              subcatIds.some((id) => id.trim().toLowerCase() === pCatId) ||
+              subcatSlugs.some((slug) => slug.trim().toLowerCase() === pCatId) ||
+              subcatSlugs.some((slug) => {
+                const cleanSlug = slug.trim().toLowerCase().replace(/-+$/g, "");
+                const cleanProductCat = pCatId.replace(/-+$/g, "");
+                return cleanSlug === cleanProductCat;
+              })
+            );
+          });
         } else {
-          // Subcategory selected: filter by category_id directly
-          result = result.filter((p) => p.category_id === selectedCategory);
+          // Subcategory selected: filter by category_id directly (using robust comparison)
+          result = result.filter((p) => {
+            const pCatId = (p.category_id || "").trim().toLowerCase();
+            const selCatId = selectedCatObj.id.trim().toLowerCase();
+            const selCatSlug = selectedCatObj.slug.trim().toLowerCase();
+            
+            return (
+              pCatId === selCatId ||
+              pCatId === selCatSlug ||
+              pCatId.replace(/-+$/g, "") === selCatSlug.replace(/-+$/g, "")
+            );
+          });
         }
       } else {
-        result = result.filter((p) => p.category_id === selectedCategory);
+        // Fallback filter by ID/slug direct match if selectedCatObj not found
+        result = result.filter((p) => {
+          const pCatId = (p.category_id || "").trim().toLowerCase();
+          const selCat = selectedCategory.trim().toLowerCase();
+          return pCatId === selCat || pCatId.replace(/-+$/g, "") === selCat.replace(/-+$/g, "");
+        });
       }
     }
 
@@ -202,7 +258,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                 <h3 className="text-xs font-bold uppercase tracking-wider text-gold mb-3">Categories</h3>
                 <div className="flex flex-col space-y-3 text-xs">
                   <button
-                    onClick={() => setSelectedCategory("all")}
+                    onClick={() => handleCategoryClick("all")}
                     className={`text-left py-1 hover:text-maroon font-bold uppercase tracking-wider ${
                       selectedCategory === "all" ? "text-maroon pl-1.5 border-l-2 border-maroon" : "text-ink-muted"
                     }`}
@@ -216,7 +272,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                       return (
                         <div key={parent.id} className="space-y-1">
                           <button
-                            onClick={() => setSelectedCategory(parent.id)}
+                            onClick={() => handleCategoryClick(parent.id)}
                             className={`text-left w-full py-1 hover:text-maroon font-bold ${
                               selectedCategory === parent.id
                                 ? "text-maroon pl-1.5 border-l-2 border-maroon"
@@ -230,7 +286,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                               {subs.map((sub) => (
                                 <button
                                   key={sub.id}
-                                  onClick={() => setSelectedCategory(sub.id)}
+                                  onClick={() => handleCategoryClick(sub.id)}
                                   className={`text-left py-0.5 hover:text-maroon transition-colors ${
                                     selectedCategory === sub.id
                                       ? "text-maroon font-bold"
@@ -262,7 +318,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                   ].map((badge) => (
                     <button
                       key={badge.id}
-                      onClick={() => setSelectedBadge(badge.id)}
+                      onClick={() => handleBadgeClick(badge.id)}
                       className={`text-left py-1 hover:text-maroon font-semibold ${
                         selectedBadge === badge.id ? "text-maroon pl-1.5 border-l-2 border-maroon" : "text-ink-muted"
                       }`}
@@ -412,7 +468,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
               <div className="flex flex-col space-y-3.5 text-xs">
                 <button
                   onClick={() => {
-                    setSelectedCategory("all");
+                    handleCategoryClick("all");
                     setMobileFiltersOpen(false);
                   }}
                   className={`text-left py-1 font-bold uppercase tracking-wider ${
@@ -429,7 +485,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                       <div key={parent.id} className="space-y-1.5">
                         <button
                           onClick={() => {
-                            setSelectedCategory(parent.id);
+                            handleCategoryClick(parent.id);
                             setMobileFiltersOpen(false);
                           }}
                           className={`text-left w-full py-1 font-bold ${
@@ -446,7 +502,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                               <button
                                 key={sub.id}
                                 onClick={() => {
-                                  setSelectedCategory(sub.id);
+                                  handleCategoryClick(sub.id);
                                   setMobileFiltersOpen(false);
                                 }}
                                 className={`text-left py-0.5 transition-colors ${
@@ -481,7 +537,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                   <button
                     key={badge.id}
                     onClick={() => {
-                      setSelectedBadge(badge.id);
+                      handleBadgeClick(badge.id);
                       setMobileFiltersOpen(false);
                     }}
                     className={`text-left py-1 font-semibold ${

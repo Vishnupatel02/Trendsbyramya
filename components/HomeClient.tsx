@@ -225,7 +225,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                 <h2 className="font-display text-3xl font-bold text-ink mt-1">Trending Products</h2>
               </div>
               <Link
-                href="/shop?filter=trending"
+                href="/shop"
                 className="text-xs font-bold uppercase tracking-widest text-maroon hover:text-maroon-dark transition-colors flex items-center gap-1.5"
               >
                 View All <ArrowRight className="w-4 h-4" />
