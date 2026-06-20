@@ -120,9 +120,8 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
       <main className="flex-grow pt-20">
         {/* 1. HERO SECTION */}
         <section className="relative bg-ivory min-h-[85vh] flex items-center overflow-hidden border-b border-maroon/5 py-12 md:py-24">
-          {/* Redesigned Watermark Logo - Gown Silhouette and Brand Text */}
-          {/* Refined Watermark Logo - Separate SVG Asset */}
-          <div className="absolute left-1/2 top-[20%] sm:top-1/2 lg:left-auto lg:right-[2%] -translate-x-1/2 lg:translate-x-0 -translate-y-1/2 z-0 pointer-events-none select-none w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] lg:w-[700px] lg:h-[700px] opacity-[0.30] overflow-hidden">
+          {/* Refined Watermark Logo - Responsive Vector Asset */}
+          <div className="absolute left-1/2 top-[20%] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none select-none md:left-auto md:right-[4%] md:translate-x-0 md:top-1/2 md:-translate-y-1/2 opacity-[0.30] overflow-hidden flex items-center justify-center w-[250px] h-[250px] sm:w-[380px] sm:h-[380px] md:w-[480px] md:h-[480px] lg:w-[clamp(500px,38vw,680px)] lg:h-[clamp(500px,38vw,680px)] max-h-[80%] max-w-full lg:max-w-[40vw]">
             <img
               src="/hero-watermark.svg"
               alt=""
