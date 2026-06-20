@@ -115,16 +115,16 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
   // ==========================================
   // /* Watermark Dress Icon Controls */
   // ==========================================
-  const iconWidth = "w-[300px] sm:w-[380px] md:w-[480px] lg:w-[clamp(500px,38vw,680px)]";
-  const iconHeight = "h-[300px] sm:h-[380px] md:h-[480px] lg:h-[clamp(500px,38vw,680px)]";
-  const iconTop = "top-[12%] md:top-1/2";
-  const iconRight = "md:right-[12%]"; // Position relative to the right boundary on desktop
+  const iconWidth = "w-[500px] sm:w-[380px] md:w-[480px] lg:w-[clamp(500px,38vw,680px)]";
+  const iconHeight = "h-[500px] sm:h-[380px] md:h-[480px] lg:h-[clamp(500px,38vw,680px)]";
+  const iconTop = "top-[14%] md:top-1/2";
+  const iconRight = "md:right-[14%]"; // Position relative to the right boundary on desktop
 
   // ==========================================
   // /* Watermark Text Controls */
   // ==========================================
   const textSize = "w-[240px] h-[133px] sm:w-[300px] sm:h-[167px] md:w-[360px] md:h-[200px] lg:w-[clamp(380px,29vw,510px)] lg:h-[clamp(210px,16vw,283px)]";
-  const textTop = "top-[12%] md:top-1/2";
+  const textTop = "top-[8%] md:top-1/2";
   const textRight = "md:right-[2%]"; // Shift text slightly to the right of the dress icon
   const textOpacity = "opacity-[0.22]"; // Opacity around 20-25%
 
