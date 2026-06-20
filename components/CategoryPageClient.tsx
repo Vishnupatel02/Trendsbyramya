@@ -69,6 +69,7 @@ export default function CategoryPageClient({
           >
             {filteredCategories.map((category) => {
               const image =
+                category.image_url ||
                 CATEGORY_IMAGES[category.slug] ||
                 "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80";
 

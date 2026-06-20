@@ -29,6 +29,7 @@ import {
   removeProduct,
   createCategory,
   removeCategory,
+  saveCategory,
   saveSiteConfig,
   createInstagramPost,
   removeInstagramPost,
@@ -36,7 +37,8 @@ import {
   rejectReviewAction,
   toggleFeatureReviewAction,
   removeReviewAction,
-  uploadImageAction
+  uploadImageAction,
+  uploadCategoryImageAction
 } from "@/lib/actions";
 
 interface DashboardClientProps {
@@ -87,6 +89,9 @@ export default function DashboardClient({
   // Form Fields - Category
   const [cName, setCName] = useState("");
   const [cParentType, setCParentType] = useState<"jewellery" | "clothing">("jewellery");
+  const [cImageUrl, setCImageUrl] = useState("");
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isUploadingCategoryImg, setIsUploadingCategoryImg] = useState(false);
 
   // Form Fields - Settings
   const [sWhatsapp, setSWhatsapp] = useState(siteConfig.whatsapp_number);
@@ -217,25 +222,46 @@ export default function DashboardClient({
     }
   };
 
-  // Add Category
+  // Add/Edit Category
   const handleCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cName.trim() === "") return;
 
     try {
-      const res = await createCategory({
-        name: cName,
-        parent_type: cParentType,
-        slug: cName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      });
-      if (res) {
-        setCategories([...categories, res]);
-        triggerAlert("success", "Category created successfully!");
-        setCName("");
-        setCategoryModalOpen(false);
+      if (editingCategory) {
+        // Edit Category
+        const res = await saveCategory(editingCategory.id, {
+          name: cName,
+          parent_type: cParentType,
+          slug: cName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          image_url: cImageUrl || undefined,
+        });
+        if (res) {
+          setCategories(categories.map((c) => (c.id === editingCategory.id ? res : c)));
+          triggerAlert("success", "Category updated successfully!");
+          setCName("");
+          setCImageUrl("");
+          setEditingCategory(null);
+          setCategoryModalOpen(false);
+        }
+      } else {
+        // Create Category
+        const res = await createCategory({
+          name: cName,
+          parent_type: cParentType,
+          slug: cName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          image_url: cImageUrl || undefined,
+        });
+        if (res) {
+          setCategories([...categories, res]);
+          triggerAlert("success", "Category created successfully!");
+          setCName("");
+          setCImageUrl("");
+          setCategoryModalOpen(false);
+        }
       }
     } catch (err: any) {
-      triggerAlert("error", err.message || "Failed to add category.");
+      triggerAlert("error", err.message || "Failed to save category.");
     }
   };
 
@@ -409,6 +435,30 @@ export default function DashboardClient({
       triggerAlert("error", err.message || "Failed to upload images.");
     } finally {
       setIsUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleCategoryImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsUploadingCategoryImg(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await uploadCategoryImageAction(formData);
+      if (res.success && res.url) {
+        setCImageUrl(res.url);
+        triggerAlert("success", "Category image uploaded successfully!");
+      } else {
+        triggerAlert("error", `Failed to upload: ${res.error || "Unknown error"}`);
+      }
+    } catch (err: any) {
+      triggerAlert("error", err.message || "Failed to upload category image.");
+    } finally {
+      setIsUploadingCategoryImg(false);
       e.target.value = "";
     }
   };
@@ -706,7 +756,9 @@ export default function DashboardClient({
               <h1 className="font-display text-2xl font-bold text-ink">Categories Manager</h1>
               <button
                 onClick={() => {
+                  setEditingCategory(null);
                   setCName("");
+                  setCImageUrl("");
                   setCategoryModalOpen(true);
                 }}
                 className="inline-flex items-center gap-1.5 rounded-full maroon-gradient px-5 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-sm"
@@ -726,14 +778,39 @@ export default function DashboardClient({
                   {categories
                     .filter((c) => c.parent_type === "jewellery")
                     .map((c) => (
-                      <div key={c.id} className="py-3 flex justify-between items-center">
-                        <span className="font-bold text-ink">{c.name}</span>
-                        <button
-                          onClick={() => handleDeleteCategory(c.id)}
-                          className="text-gray-400 hover:text-rose-600 transition-colors p-1"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      <div key={c.id} className="py-3 flex items-center justify-between gap-4 border-b border-gray-100 last:border-b-0">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-ivory border border-maroon/10 overflow-hidden flex-shrink-0">
+                            {c.image_url ? (
+                              <img src={c.image_url} alt={c.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                <FileImage className="w-5 h-5 text-maroon/20" />
+                              </div>
+                            )}
+                          </div>
+                          <span className="font-bold text-ink">{c.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingCategory(c);
+                              setCName(c.name);
+                              setCParentType(c.parent_type);
+                              setCImageUrl(c.image_url || "");
+                              setCategoryModalOpen(true);
+                            }}
+                            className="text-gray-400 hover:text-gold transition-colors p-1"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCategory(c.id)}
+                            className="text-gray-400 hover:text-rose-600 transition-colors p-1"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                 </div>
@@ -748,14 +825,39 @@ export default function DashboardClient({
                   {categories
                     .filter((c) => c.parent_type === "clothing")
                     .map((c) => (
-                      <div key={c.id} className="py-3 flex justify-between items-center">
-                        <span className="font-bold text-ink">{c.name}</span>
-                        <button
-                          onClick={() => handleDeleteCategory(c.id)}
-                          className="text-gray-400 hover:text-rose-600 transition-colors p-1"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      <div key={c.id} className="py-3 flex items-center justify-between gap-4 border-b border-gray-100 last:border-b-0">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-ivory border border-maroon/10 overflow-hidden flex-shrink-0">
+                            {c.image_url ? (
+                              <img src={c.image_url} alt={c.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                <FileImage className="w-5 h-5 text-maroon/20" />
+                              </div>
+                            )}
+                          </div>
+                          <span className="font-bold text-ink">{c.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingCategory(c);
+                              setCName(c.name);
+                              setCParentType(c.parent_type);
+                              setCImageUrl(c.image_url || "");
+                              setCategoryModalOpen(true);
+                            }}
+                            className="text-gray-400 hover:text-gold transition-colors p-1"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCategory(c.id)}
+                            className="text-gray-400 hover:text-rose-600 transition-colors p-1"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                 </div>
@@ -1162,11 +1264,26 @@ export default function DashboardClient({
       {/* MODAL: Category Add */}
       {categoryModalOpen && (
         <div className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={() => setCategoryModalOpen(false)} />
+          <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={() => {
+            setCategoryModalOpen(false);
+            setEditingCategory(null);
+            setCName("");
+            setCImageUrl("");
+          }} />
           <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 space-y-4">
             <div className="flex justify-between items-center border-b border-maroon/10 pb-2">
-              <h2 className="font-display text-sm font-bold text-ink">Add Category</h2>
-              <button onClick={() => setCategoryModalOpen(false)} className="text-gray-400 hover:text-maroon">
+              <h2 className="font-display text-sm font-bold text-ink">
+                {editingCategory ? "Edit Category" : "Add Category"}
+              </h2>
+              <button
+                onClick={() => {
+                  setCategoryModalOpen(false);
+                  setEditingCategory(null);
+                  setCName("");
+                  setCImageUrl("");
+                }}
+                className="text-gray-400 hover:text-maroon"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1195,11 +1312,48 @@ export default function DashboardClient({
                 </select>
               </div>
 
+              {/* Category Image Upload */}
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-bold text-ink-muted block">Category Image</label>
+                {cImageUrl ? (
+                  <div className="relative rounded-lg border border-maroon/10 overflow-hidden aspect-[4/3] bg-ivory">
+                    <img src={cImageUrl} alt="Category preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setCImageUrl("")}
+                      className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full text-rose-600 hover:text-rose-700 shadow-sm transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-maroon/10 hover:border-maroon/30 rounded-xl p-4 cursor-pointer hover:bg-ivory/30 transition-all aspect-[4/3]">
+                    {isUploadingCategoryImg ? (
+                      <span className="text-maroon animate-pulse text-[10px] font-bold uppercase tracking-widest">Uploading...</span>
+                    ) : (
+                      <>
+                        <FileImage className="w-8 h-8 text-maroon/20 mb-2" />
+                        <span className="text-[10px] font-bold text-maroon uppercase tracking-wider">Upload Image</span>
+                        <span className="text-[9px] text-ink-muted mt-1">PNG, JPG up to 5MB</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCategoryImageChange}
+                      disabled={isUploadingCategoryImg}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+
               <button
                 type="submit"
-                className="w-full rounded-full maroon-gradient py-2.5 text-xs font-bold uppercase tracking-widest text-white shadow-md cursor-pointer mt-4"
+                disabled={isUploadingCategoryImg}
+                className="w-full rounded-full maroon-gradient py-2.5 text-xs font-bold uppercase tracking-widest text-white shadow-md cursor-pointer mt-4 disabled:opacity-50"
               >
-                Create Category
+                {editingCategory ? "Save Changes" : "Create Category"}
               </button>
             </form>
           </div>

@@ -5,6 +5,7 @@ import {
   getCategories,
   addCategory,
   deleteCategory,
+  updateCategory,
   getProducts,
   getProductById,
   addProduct,
@@ -46,7 +47,13 @@ export async function loginAdmin(email: string, password: string): Promise<{ suc
       }
       
       // Set session cookie
-      if (data.session) {
+      if (data.session && data.user) {
+        const adminEmail = process.env.ADMIN_EMAIL || "ramyajangili221@gmail.com";
+        if (data.user.email !== adminEmail) {
+          await supabase.auth.signOut();
+          return { success: false, error: "Access denied: This account is not an authorized administrator." };
+        }
+
         const cookieStore = await cookies();
         cookieStore.set(SESSION_COOKIE_NAME, data.session.access_token, {
           httpOnly: true,
@@ -100,7 +107,8 @@ export async function checkAdminAuth(): Promise<boolean> {
     if (error || !user) {
       return false;
     }
-    return true;
+    const adminEmail = process.env.ADMIN_EMAIL || "ramyajangili221@gmail.com";
+    return user.email === adminEmail;
   } else {
     // Mock token check
     return sessionToken === "mock-admin-token-xyz-123";
@@ -126,6 +134,12 @@ export async function removeCategory(id: string): Promise<boolean> {
   const isAuth = await checkAdminAuth();
   if (!isAuth) throw new Error("Unauthorized");
   return deleteCategory(id);
+}
+
+export async function saveCategory(id: string, updates: Partial<Category>): Promise<Category | null> {
+  const isAuth = await checkAdminAuth();
+  if (!isAuth) throw new Error("Unauthorized");
+  return updateCategory(id, updates);
 }
 
 /* ============================================================================
@@ -304,6 +318,22 @@ export async function uploadImageAction(formData: FormData): Promise<{ success: 
   } catch (err: any) {
     console.error("Error uploading image:", err);
     return { success: false, error: err.message || "Failed to upload image." };
+  }
+}
+
+export async function uploadCategoryImageAction(formData: FormData): Promise<{ success: boolean; url?: string; error?: string }> {
+  try {
+    const isAuth = await checkAdminAuth();
+    if (!isAuth) throw new Error("Unauthorized");
+
+    const file = formData.get("file") as File;
+    if (!file) throw new Error("No file uploaded");
+
+    const publicUrl = await uploadToSupabaseStorage(file, "categories");
+    return { success: true, url: publicUrl };
+  } catch (err: any) {
+    console.error("Error uploading category image:", err);
+    return { success: false, error: err.message || "Failed to upload category image." };
   }
 }
 

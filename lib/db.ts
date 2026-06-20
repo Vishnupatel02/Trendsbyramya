@@ -178,6 +178,22 @@ export async function deleteCategory(id: string): Promise<boolean> {
   return true;
 }
 
+export async function updateCategory(id: string, updates: Partial<Category>): Promise<Category | null> {
+  const client = await getSupabaseClient(true);
+  
+  const dbUpdates: any = {};
+  if (updates.name !== undefined) dbUpdates.name = updates.name;
+  if (updates.parent_type !== undefined) dbUpdates.parent_type = updates.parent_type;
+  if (updates.slug !== undefined) dbUpdates.slug = updates.slug;
+  if (updates.image_url !== undefined) dbUpdates.image_url = updates.image_url;
+
+  const { data, error } = await client.from('categories').update(dbUpdates).eq('id', id).select();
+  if (error) {
+    throw new Error(`Supabase updateCategory error: ${error.message}`);
+  }
+  return data ? data[0] : null;
+}
+
 /* ============================================================================
    PRODUCTS SERVICES
    ============================================================================ */

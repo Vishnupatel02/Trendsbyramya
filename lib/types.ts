@@ -3,6 +3,7 @@ export interface Category {
   name: string;
   parent_type: 'jewellery' | 'clothing';
   slug: string;
+  image_url?: string;
   created_at?: string;
 }
 
