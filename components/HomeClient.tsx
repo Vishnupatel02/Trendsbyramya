@@ -121,7 +121,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
         {/* 1. HERO SECTION */}
         <section className="relative bg-ivory min-h-[85vh] flex items-center overflow-hidden border-b border-maroon/5 py-12 md:py-24">
           {/* Refined Watermark Logo - Responsive Vector Asset */}
-          <div className="absolute left-1/2 top-[14%] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none select-none md:left-auto md:right-[6%] md:translate-x-0 md:top-1/2 md:-translate-y-1/2 opacity-[0.30] flex items-center justify-center w-[300px] h-[300px] sm:w-[380px] sm:h-[380px] md:w-[480px] md:h-[480px] lg:w-[clamp(500px,38vw,680px)] lg:h-[clamp(500px,38vw,680px)] max-h-[80%] max-w-full lg:max-w-[40vw]">
+          <div className="absolute left-1/2 top-[12%] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none select-none md:left-auto md:right-[6%] md:translate-x-0 md:top-1/2 md:-translate-y-1/2 opacity-[0.30] flex items-center justify-center w-[400px] h-[400px] sm:w-[380px] sm:h-[380px] md:w-[480px] md:h-[480px] lg:w-[clamp(500px,38vw,680px)] lg:h-[clamp(500px,38vw,680px)] max-h-[80%] max-w-full lg:max-w-[40vw]">
             <img
               src="/hero-watermark.svg"
               alt=""
