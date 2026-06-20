@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" width="100%" height="100%">
+  <defs>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Great+Vibes&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap");
+      .serif-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-weight: 900;
+        fill: #8B2332;
+        letter-spacing: 0.05em;
+      }
+      .serif-by {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-weight: 600;
+        fill: #8B2332;
+      }
+      .cursive-name {
+        font-family: 'Great Vibes', cursive;
+        fill: #8B2332;
+      }
+    </style>
+  </defs>
+
+  <!-- Gown Hanger -->
+  <path d="M 175,102 C 175,85 187,85 187,75 C 187,65 175,65 175,75" stroke="#8B2332" stroke-width="2.5" stroke-linecap="round" fill="none" />
+  <path d="M 140,112 L 175,100 L 210,112" stroke="#8B2332" stroke-width="2.5" stroke-linecap="round" fill="none" />
+
+  <!-- Left Arm (on hip) -->
+  <path d="M 140,112 C 122,125 118,145 120,152 C 122,158 132,165 142,168" stroke="#8B2332" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8" />
+
+  <!-- Right Arm (holding drape) -->
+  <path d="M 210,112 C 230,118 250,132 272,138 C 276,139 285,138 285,135 C 285,132 272,126 260,120" stroke="#8B2332" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8" />
+
+  <!-- Gown Silhouette -->
+  <path d="M 158,112
+           L 155,145
+           C 155,160 162,175 162,190
+           C 162,190 102,280 65,370
+           C 50,405 92,415 175,405
+           C 258,415 300,405 285,370
+           C 248,280 188,190 188,190
+           C 188,175 195,160 195,145
+           L 192,112
+           Z" 
+        fill="#8B2332" />
+
+  <!-- Skirt drapery folds for depth -->
+  <path d="M 162,190 C 162,220 135,300 115,405" stroke="#F8F6F1" stroke-width="1.5" fill="none" opacity="0.25" />
+  <path d="M 175,190 C 175,220 175,300 175,405" stroke="#F8F6F1" stroke-width="1.5" fill="none" opacity="0.25" />
+  <path d="M 188,190 C 188,220 215,300 235,405" stroke="#F8F6F1" stroke-width="1.5" fill="none" opacity="0.25" />
+
+  <!-- Dupatta/Drape Fabric -->
+  <path d="M 162,190 
+           C 150,225 158,260 210,270 
+           C 240,275 260,240 274,138 
+           C 274,138 300,240 320,310 
+           C 328,338 318,348 302,342 
+           C 285,335 268,265 258,185 
+           C 240,240 215,295 190,295 
+           C 165,295 155,235 162,190 
+           Z" 
+        fill="#8B2332" opacity="0.9" />
+
+  <!-- Typography matching logo -->
+  <!-- "TRENDS" -->
+  <text x="300" y="210" class="serif-title" font-size="64">TRENDS</text>
+  
+  <!-- "By" -->
+  <text x="495" y="235" class="serif-by" font-size="28">By</text>
+  
+  <!-- "Ramya" -->
+  <text x="325" y="320" class="cursive-name" font-size="110">Ramya</text>
+</svg>
