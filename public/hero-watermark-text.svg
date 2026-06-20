@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 250" width="100%" height="100%">
+  <defs>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Great+Vibes&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap");
+      .serif-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-weight: 900;
+        fill: #8B2332;
+        letter-spacing: 0.05em;
+      }
+      .serif-by {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-weight: 600;
+        fill: #8B2332;
+      }
+      .cursive-name {
+        font-family: 'Great Vibes', cursive;
+        fill: #8B2332;
+      }
+    </style>
+  </defs>
+
+  <!-- Typography matching logo (shifted and adjusted for the new viewBox) -->
+  <!-- "TRENDS" -->
+  <text x="10" y="60" class="serif-title" font-size="64">TRENDS</text>
+  
+  <!-- "By" -->
+  <text x="205" y="85" class="serif-by" font-size="28">By</text>
+  
+  <!-- "Ramya" -->
+  <text x="35" y="170" class="cursive-name" font-size="110">Ramya</text>
+</svg>

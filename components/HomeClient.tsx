@@ -112,6 +112,22 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
 
   const parentCategories = categories.filter((c) => c.parent_type === "root");
 
+  // ==========================================
+  // /* Watermark Dress Icon Controls */
+  // ==========================================
+  const iconWidth = "w-[300px] sm:w-[380px] md:w-[480px] lg:w-[clamp(500px,38vw,680px)]";
+  const iconHeight = "h-[300px] sm:h-[380px] md:h-[480px] lg:h-[clamp(500px,38vw,680px)]";
+  const iconTop = "top-[12%] md:top-1/2";
+  const iconRight = "md:right-[12%]"; // Position relative to the right boundary on desktop
+
+  // ==========================================
+  // /* Watermark Text Controls */
+  // ==========================================
+  const textSize = "w-[240px] h-[133px] sm:w-[300px] sm:h-[167px] md:w-[360px] md:h-[200px] lg:w-[clamp(380px,29vw,510px)] lg:h-[clamp(210px,16vw,283px)]";
+  const textTop = "top-[12%] md:top-1/2";
+  const textRight = "md:right-[2%]"; // Shift text slightly to the right of the dress icon
+  const textOpacity = "opacity-[0.22]"; // Opacity around 20-25%
+
   return (
     <>
       <Header onCartClick={() => setCartOpen(true)} />
@@ -120,13 +136,29 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
       <main className="flex-grow pt-20">
         {/* 1. HERO SECTION */}
         <section className="relative bg-ivory min-h-[85vh] flex items-center overflow-hidden border-b border-maroon/5 py-12 md:py-24">
-          {/* Refined Watermark Logo - Responsive Vector Asset */}
-          <div className="absolute left-1/2 top-[12%] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none select-none md:left-auto md:right-[6%] md:translate-x-0 md:top-1/2 md:-translate-y-1/2 opacity-[0.30] flex items-center justify-center w-[400px] h-[400px] sm:w-[380px] sm:h-[380px] md:w-[480px] md:h-[480px] lg:w-[clamp(500px,38vw,680px)] lg:h-[clamp(500px,38vw,680px)] max-h-[80%] max-w-full lg:max-w-[40vw]">
-            <img
-              src="/hero-watermark.svg"
-              alt=""
-              className="w-full h-full object-contain"
-            />
+          {/* Refined Watermark Logo - Split Responsive Layers */}
+          <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+            {/* Watermark Dress Icon Controls */}
+            <div 
+              className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 md:left-auto md:translate-x-0 md:-translate-y-1/2 opacity-[0.30] flex items-center justify-center ${iconWidth} ${iconHeight} ${iconTop} ${iconRight}`}
+            >
+              <img
+                src="/hero-watermark-icon.svg"
+                alt=""
+                className="w-full h-full object-contain hero-watermark-icon"
+              />
+            </div>
+
+            {/* Watermark Text Controls */}
+            <div 
+              className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 md:left-auto md:translate-x-0 md:-translate-y-1/2 flex items-center justify-center hero-watermark-text ${textSize} ${textTop} ${textRight} ${textOpacity}`}
+            >
+              <img
+                src="/hero-watermark-text.svg"
+                alt="Trends By Ramya"
+                className="w-full h-full object-contain"
+              />
+            </div>
           </div>
 
           {/* Banner Alert Toast */}
