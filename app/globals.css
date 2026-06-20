@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F8F6F1;
-  --foreground: #222222;
-  --maroon: #7A1F2B;
-  --gold: #C9A227;
+  --background: #F8F6F1; /* Warm Ivory/Cream background */
+  --foreground: #222222; /* Soft charcoal */
+  --maroon: #7A1F2B; /* Deep Burgundy */
+  --gold: #C9A227; /* Rich Gold */
 }
 
 @theme {
@@ -20,7 +20,7 @@
   --font-sans: var(--font-montserrat), sans-serif;
 }
 
-/* Base Body & Layout Styles */
+/* Base Body Styles - Traditional & Modern Luxury Boutique */
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -30,39 +30,44 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Modern Luxury Custom Scrollbar */
+/* Elegant Editorial Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(122, 31, 43, 0.15);
+  background: rgba(122, 31, 43, 0.12);
   border-radius: 99px;
-  transition: background 0.3s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(122, 31, 43, 0.35);
+  background: rgba(122, 31, 43, 0.25);
 }
 
-/* Luxury Animations & Transitions */
-.gold-gradient {
-  background: linear-gradient(135deg, #C9A227 0%, #DFB93E 50%, #C9A227 100%);
-  background-size: 200% auto;
-  transition: background-position 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease, box-shadow 0.3s ease;
+/* Editorial Spacing & Text Styling */
+h1, h2, h3, .font-display {
+  letter-spacing: 0.02em;
+  text-rendering: optimizeLegibility;
 }
-.gold-gradient:hover {
+
+/* Premium Boutique Gradients - Slow and Elegant Transitions */
+.maroon-gradient {
+  background: linear-gradient(135deg, #7A1F2B 0%, #952936 50%, #7A1F2B 100%);
+  background-size: 200% auto;
+  transition: background-position 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s ease, box-shadow 0.4s ease;
+}
+.maroon-gradient:hover {
   background-position: right center;
 }
 
-.maroon-gradient {
-  background: linear-gradient(135deg, #7A1F2B 0%, #9E2B3A 50%, #7A1F2B 100%);
+.gold-gradient {
+  background: linear-gradient(135deg, #C9A227 0%, #E2BD4D 50%, #C9A227 100%);
   background-size: 200% auto;
-  transition: background-position 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease, box-shadow 0.3s ease;
+  transition: background-position 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s ease, box-shadow 0.4s ease;
 }
-.maroon-gradient:hover {
+.gold-gradient:hover {
   background-position: right center;
 }
 
@@ -72,79 +77,67 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-/* Smooth zoom transition for images */
+/* Image Presentation - Editorial Catalogue Feel */
 .image-zoom-trigger {
   overflow: hidden;
+  position: relative;
 }
 .image-zoom-trigger img {
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .image-zoom-trigger:hover img {
-  transform: scale(1.06);
+  transform: scale(1.04);
 }
 
-/* Glassmorphism Elements (Apple-Inspired) */
+/* Luxury Saree & Jewellery Boutique Header (Very Subtle Glass on Scroll) */
 .glass-header {
-  background-color: rgba(248, 246, 241, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(122, 31, 43, 0.06);
+  background-color: rgba(248, 246, 241, 0.96); /* Solid Warm Ivory feel */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(122, 31, 43, 0.05);
+  box-shadow: 0 10px 30px rgba(122, 31, 43, 0.015);
 }
 
-.glass-card {
-  background-color: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.015);
+/* Solid Premium Cards (No apple transparency) */
+.luxury-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(122, 31, 43, 0.04);
+  box-shadow: 0 8px 32px rgba(122, 31, 43, 0.012);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.luxury-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(122, 31, 43, 0.1);
+  box-shadow: 0 20px 48px rgba(122, 31, 43, 0.04);
+}
+
+/* Button & Link Editorial Transitions */
+.luxury-btn-transition {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.glass-card:hover {
-  background-color: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(122, 31, 43, 0.12);
-  box-shadow: 0 16px 40px rgba(122, 31, 43, 0.05);
-}
-
-/* Luxury shadows using brand-integrated hues */
-.luxury-shadow {
-  box-shadow: 0 4px 20px rgba(122, 31, 43, 0.02);
-}
-.luxury-card-hover {
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.luxury-card-hover:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(122, 31, 43, 0.06);
-  border-color: rgba(122, 31, 43, 0.12);
-}
-
-/* Button & Link Interactions */
-.luxury-btn-transition {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
 .luxury-btn-transition:hover {
-  transform: translateY(-1.5px);
-  box-shadow: 0 8px 24px rgba(122, 31, 43, 0.16);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(122, 31, 43, 0.12);
 }
 .luxury-btn-transition:active {
   transform: translateY(0);
 }
 
-/* Keyframe animations */
+/* Slow and Elegant revealing animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Hide scrollbar visually but maintain scrolling functionality */
+/* Hide scrollbars for Category Navigation Bar */
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
 .scrollbar-none {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
