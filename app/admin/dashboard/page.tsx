@@ -1,6 +1,6 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { checkAdminAuth, fetchProducts, fetchCategories, fetchSiteConfig, fetchInstagramFeed, fetchReviews } from "@/lib/actions";
+import { checkAdminAuth, fetchProducts, fetchCategories, fetchSiteConfig, fetchInstagramFeed, fetchReviews, fetchContactEnquiries } from "@/lib/actions";
 import DashboardClient from "@/components/DashboardClient";
 
 // Force dynamic server validation on dashboard entries
@@ -19,6 +19,7 @@ export default async function AdminDashboardPage() {
   const siteConfig = await fetchSiteConfig();
   const instagramFeed = await fetchInstagramFeed();
   const reviews = await fetchReviews();
+  const enquiries = await fetchContactEnquiries();
 
   return (
     <DashboardClient
@@ -27,6 +28,7 @@ export default async function AdminDashboardPage() {
       initialSiteConfig={siteConfig}
       initialInstagramFeed={instagramFeed}
       initialReviews={reviews}
+      initialEnquiries={enquiries}
     />
   );
 }

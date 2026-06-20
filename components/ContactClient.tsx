@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { MessageSquare, Mail, Instagram, Clock, Send } from "lucide-react";
 import { SiteConfig } from "@/lib/types";
-import { fetchSiteConfig } from "@/lib/actions";
+import { fetchSiteConfig, createContactEnquiryAction } from "@/lib/actions";
 import Header from "./Header";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
@@ -18,8 +18,10 @@ export default function ContactClient() {
 
   // Contact Form States
   const [name, setName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [queryType, setQueryType] = useState("Jewellery Customization");
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     async function loadConfig() {
@@ -35,18 +37,43 @@ export default function ContactClient() {
 
   const cleanPhone = siteConfig.whatsapp_number.replace(/[^0-9+]/g, "");
 
-  const handleWhatsAppEnquiry = (e: React.FormEvent) => {
+  const handleWhatsAppEnquiry = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !message) {
-      alert("Please fill in your name and message.");
+    if (!name || !whatsapp || !message) {
+      alert("Please fill in all required fields.");
       return;
     }
 
-    const baseText = `Hello Trends by Ramya,\n\nMy Name: ${name}\nEnquiry Type: ${queryType}\nMessage: ${message}`;
-    const encodedText = encodeURIComponent(baseText);
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedText}`;
-    
-    window.open(whatsappUrl, "_blank");
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("whatsapp", whatsapp);
+      formData.append("looking_for", queryType);
+      formData.append("message", message);
+
+      await createContactEnquiryAction(formData);
+
+      const baseText = `Hello Trends by Ramya,\n\nMy Name: ${name}\nWhatsApp: ${whatsapp}\nLooking For: ${queryType}\nMessage: ${message}`;
+      const encodedText = encodeURIComponent(baseText);
+      const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedText}`;
+      
+      window.open(whatsappUrl, "_blank");
+
+      // Reset fields
+      setName("");
+      setWhatsapp("");
+      setMessage("");
+    } catch (err) {
+      console.error("Enquiry log failed:", err);
+      // Fallback: still open WhatsApp even if DB log fails
+      const baseText = `Hello Trends by Ramya,\n\nMy Name: ${name}\nWhatsApp: ${whatsapp}\nLooking For: ${queryType}\nMessage: ${message}`;
+      const encodedText = encodeURIComponent(baseText);
+      const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedText}`;
+      window.open(whatsappUrl, "_blank");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -175,8 +202,23 @@ export default function ContactClient() {
                 </div>
 
                 <div>
+                  <label htmlFor="whatsapp-number" className="block text-xs font-bold uppercase tracking-wider text-ink mb-2">
+                    WhatsApp Number
+                  </label>
+                  <input
+                    type="text"
+                    id="whatsapp-number"
+                    required
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                    placeholder="Enter your WhatsApp number (e.g. +91 97052 82684)"
+                    className="w-full bg-white border border-maroon/10 focus:border-maroon rounded-xl px-4 py-3.5 text-xs text-ink outline-none transition-colors"
+                  />
+                </div>
+
+                <div>
                   <label htmlFor="enquiry-type" className="block text-xs font-bold uppercase tracking-wider text-ink mb-2">
-                    Enquiry Type
+                    What are you looking for?
                   </label>
                   <select
                     id="enquiry-type"
@@ -184,11 +226,11 @@ export default function ContactClient() {
                     onChange={(e) => setQueryType(e.target.value)}
                     className="w-full bg-white border border-maroon/10 focus:border-maroon rounded-xl px-4 py-3.5 text-xs text-ink outline-none transition-colors cursor-pointer"
                   >
-                    <option>Jewellery Customization</option>
-                    <option>Clothing Sizing / Custom Tailoring</option>
-                    <option>Bulk / Return Gift Orders</option>
-                    <option>Order Status / Follow-up</option>
-                    <option>General Collaboration / Feedback</option>
+                    <option value="Jewellery Customization">Jewellery Customization</option>
+                    <option value="Clothing Sizing">Clothing Sizing</option>
+                    <option value="Bridal Coordinates">Bridal Coordinates</option>
+                    <option value="Sarees Enquiries">Sarees Enquiries</option>
+                    <option value="Other Boutique Enquiry">Other Boutique Enquiry</option>
                   </select>
                 </div>
 
@@ -209,9 +251,10 @@ export default function ContactClient() {
 
                 <button
                   type="submit"
-                  className="w-full inline-flex items-center justify-center rounded-full maroon-gradient px-8 py-4 text-xs font-bold uppercase tracking-widest text-white shadow-md hover:shadow-lg transition-transform hover:scale-[1.01]"
+                  disabled={isSubmitting}
+                  className="w-full inline-flex items-center justify-center rounded-full maroon-gradient px-8 py-4 text-xs font-bold uppercase tracking-widest text-white shadow-md hover:shadow-lg transition-transform hover:scale-[1.01] disabled:opacity-50"
                 >
-                  <Send className="w-4 h-4 mr-2" /> Start WhatsApp Chat
+                  <Send className="w-4 h-4 mr-2" /> {isSubmitting ? "Sending..." : "Start WhatsApp Chat"}
                 </button>
               </form>
             </div>

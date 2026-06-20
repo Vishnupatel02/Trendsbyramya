@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
-import { Category, Product, SiteConfig, InstagramPost, Review } from './types';
+import { Category, Product, SiteConfig, InstagramPost, Review, ContactEnquiry } from './types';
 
 function ensureUUID(id?: string): string {
   if (id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
@@ -147,7 +147,21 @@ export async function getCategories(): Promise<Category[]> {
     console.error('Supabase getCategories error:', error);
     return [];
   }
-  return data || [];
+  
+  const categories = data || [];
+  
+  // Backwards compatibility: If there are no parent categories (parent_type === 'root')
+  // in the database, we return default ones (Jewellery, Clothing) so the site works.
+  const hasParents = categories.some(c => c.parent_type === 'root');
+  if (!hasParents) {
+    const defaultParents: Category[] = [
+      { id: 'parent-jewellery', name: 'Jewellery', slug: 'jewellery', parent_type: 'root' },
+      { id: 'parent-clothing', name: 'Clothing', slug: 'clothing', parent_type: 'root' }
+    ];
+    return [...defaultParents, ...categories];
+  }
+
+  return categories;
 }
 
 export async function addCategory(category: Omit<Category, 'id'> & { id?: string }): Promise<Category> {
@@ -170,17 +184,44 @@ export async function addCategory(category: Omit<Category, 'id'> & { id?: string
 
 export async function deleteCategory(id: string): Promise<boolean> {
   const client = await getSupabaseClient(true);
+
+  // Fetch category first
+  const { data: existing, error: fetchError } = await client.from('categories').select('*').eq('id', id).single();
+  if (fetchError || !existing) {
+    console.error('deleteCategory fetch error:', fetchError);
+    return false;
+  }
+
+  // Delete category itself
   const { error } = await client.from('categories').delete().eq('id', id);
   if (error) {
     console.error('Supabase deleteCategory error:', error);
     return false;
   }
+
+  // Cascade updates/unlinks
+  if (existing.parent_type === 'root') {
+    // Delete subcategories
+    await client.from('categories').delete().eq('parent_type', existing.slug);
+    // Unlink products (set category to empty)
+    await client.from('products').update({ category: '' }).eq('category', existing.slug);
+  } else {
+    // Unlink products (set subcategory to empty)
+    await client.from('products').update({ subcategory: '' }).eq('subcategory', existing.slug);
+  }
+
   return true;
 }
 
 export async function updateCategory(id: string, updates: Partial<Category>): Promise<Category | null> {
   const client = await getSupabaseClient(true);
-  
+
+  // Fetch existing category first to check for slug changes
+  const { data: existing, error: fetchError } = await client.from('categories').select('*').eq('id', id).single();
+  if (fetchError || !existing) {
+    throw new Error(`Failed to fetch category for update: ${fetchError?.message}`);
+  }
+
   const dbUpdates: any = {};
   if (updates.name !== undefined) dbUpdates.name = updates.name;
   if (updates.parent_type !== undefined) dbUpdates.parent_type = updates.parent_type;
@@ -191,7 +232,20 @@ export async function updateCategory(id: string, updates: Partial<Category>): Pr
   if (error) {
     throw new Error(`Supabase updateCategory error: ${error.message}`);
   }
-  return data ? data[0] : null;
+  
+  const updated = data ? data[0] : null;
+
+  // Cascade update subcategories and products if parent category slug changes
+  if (updated && existing.slug !== updated.slug) {
+    if (existing.parent_type === 'root') {
+      await client.from('categories').update({ parent_type: updated.slug }).eq('parent_type', existing.slug);
+      await client.from('products').update({ category: updated.slug }).eq('category', existing.slug);
+    } else {
+      await client.from('products').update({ subcategory: updated.slug }).eq('subcategory', existing.slug);
+    }
+  }
+
+  return updated;
 }
 
 /* ============================================================================
@@ -427,6 +481,48 @@ export async function deleteReview(id: string): Promise<boolean> {
   const { error } = await client.from('reviews').delete().eq('id', id);
   if (error) {
     console.error('Supabase deleteReview error:', error);
+    return false;
+  }
+  return true;
+}
+
+/* ============================================================================
+   CONTACT ENQUIRIES SERVICES
+   ============================================================================ */
+
+export async function getContactEnquiries(): Promise<ContactEnquiry[]> {
+  try {
+    const client = await getSupabaseClient();
+    const { data, error } = await client.from('contact_enquiries').select('*').order('created_at', { ascending: false });
+    if (error) {
+      console.warn('Supabase getContactEnquiries warning:', error.message);
+      return [];
+    }
+    return data || [];
+  } catch (e) {
+    console.warn('getContactEnquiries error caught:', e);
+    return [];
+  }
+}
+
+export async function addContactEnquiry(enquiry: Omit<ContactEnquiry, 'id'>): Promise<ContactEnquiry> {
+  const client = await getSupabaseClient(true);
+  const newEnquiry = {
+    ...enquiry,
+    created_at: new Date().toISOString()
+  };
+  const { data, error } = await client.from('contact_enquiries').insert([newEnquiry]).select();
+  if (error) {
+    throw new Error(`Supabase addContactEnquiry error: ${error.message}`);
+  }
+  return data[0];
+}
+
+export async function deleteContactEnquiry(id: string): Promise<boolean> {
+  const client = await getSupabaseClient(true);
+  const { error } = await client.from('contact_enquiries').delete().eq('id', id);
+  if (error) {
+    console.error('Supabase deleteContactEnquiry error:', error);
     return false;
   }
   return true;

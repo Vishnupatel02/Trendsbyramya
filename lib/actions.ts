@@ -22,8 +22,11 @@ import {
   updateReview,
   deleteReview,
   getSupabaseClient,
+  getContactEnquiries,
+  addContactEnquiry,
+  deleteContactEnquiry,
 } from "./db";
-import { Category, Product, SiteConfig, InstagramPost, Review } from "./types";
+import { Category, Product, SiteConfig, InstagramPost, Review, ContactEnquiry } from "./types";
 
 // Mock Admin Credentials (used if Supabase is disabled)
 const MOCK_ADMIN_EMAIL = "admin@trendsbyramya.com";
@@ -335,5 +338,45 @@ export async function uploadCategoryImageAction(formData: FormData): Promise<{ s
     console.error("Error uploading category image:", err);
     return { success: false, error: err.message || "Failed to upload category image." };
   }
+}
+
+/* ============================================================================
+   CONTACT ENQUIRIES ACTIONS
+   ============================================================================ */
+
+export async function fetchContactEnquiries(): Promise<ContactEnquiry[]> {
+  return getContactEnquiries();
+}
+
+export async function createContactEnquiryAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const name = formData.get("name") as string;
+    const whatsapp = formData.get("whatsapp") as string;
+    const lookingFor = formData.get("looking_for") as string;
+    const message = formData.get("message") as string;
+
+    if (!name || !whatsapp || !message) {
+      throw new Error("Missing required fields");
+    }
+
+    await addContactEnquiry({
+      name,
+      whatsapp_number: whatsapp,
+      looking_for: lookingFor,
+      message,
+    });
+
+    return { success: true };
+  } catch (err: any) {
+    console.warn("Error logging enquiry to DB:", err.message);
+    // Return success: false, but the frontend will still proceed to redirect to WhatsApp.
+    return { success: false, error: err.message || "Failed to store enquiry." };
+  }
+}
+
+export async function removeContactEnquiryAction(id: string): Promise<boolean> {
+  const isAuth = await checkAdminAuth();
+  if (!isAuth) throw new Error("Unauthorized");
+  return deleteContactEnquiry(id);
 }
 

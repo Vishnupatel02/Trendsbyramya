@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ShoppingBag, Heart, Menu, X, Instagram } from "lucide-react";
 import { useCart } from "@/lib/context/CartContext";
-import { fetchSiteConfig } from "@/lib/actions";
-import { SiteConfig } from "@/lib/types";
+import { fetchSiteConfig, fetchCategories } from "@/lib/actions";
+import { SiteConfig, Category } from "@/lib/types";
 
 interface HeaderProps {
   onCartClick?: () => void;
@@ -23,12 +23,17 @@ export default function Header({ onCartClick }: HeaderProps) {
     email_address: "ramyajangili221@gmail.com",
     instagram_url: "https://www.instagram.com/trends_by_ramya",
   });
+  const [parentCategories, setParentCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     async function loadConfig() {
       try {
         const config = await fetchSiteConfig();
         if (config) setSiteConfig(config);
+        
+        const allCats = await fetchCategories();
+        const parents = allCats.filter(c => c.parent_type === "root");
+        setParentCategories(parents);
       } catch (err) {
         console.error("Failed to load header site config:", err);
       }
@@ -94,23 +99,23 @@ export default function Header({ onCartClick }: HeaderProps) {
               Home
             </Link>
 
-            <Link
-              href="/jewellery"
-              className={`text-xs font-bold uppercase tracking-widest hover:text-maroon transition-colors ${
-                pathname === "/jewellery" ? "text-maroon border-b border-maroon/20 pb-0.5" : "text-ink-muted"
-              }`}
-            >
-              Jewellery
-            </Link>
-
-            <Link
-              href="/clothing"
-              className={`text-xs font-bold uppercase tracking-widest hover:text-maroon transition-colors ${
-                pathname === "/clothing" ? "text-maroon border-b border-maroon/20 pb-0.5" : "text-ink-muted"
-              }`}
-            >
-              Clothing
-            </Link>
+            {parentCategories.map((cat) => {
+              const href = ["jewellery", "clothing"].includes(cat.slug) 
+                ? `/${cat.slug}` 
+                : `/shop?category=${cat.slug}`;
+              const isActive = pathname === href || (href.startsWith("/shop") && pathname.includes(`category=${cat.slug}`));
+              return (
+                <Link
+                  key={cat.id}
+                  href={href}
+                  className={`text-xs font-bold uppercase tracking-widest hover:text-maroon transition-colors ${
+                    isActive ? "text-maroon border-b border-maroon/20 pb-0.5" : "text-ink-muted"
+                  }`}
+                >
+                  {cat.name}
+                </Link>
+              );
+            })}
 
             <Link
               href="/shop?filter=new_arrival"
@@ -222,21 +227,21 @@ export default function Header({ onCartClick }: HeaderProps) {
               Home
             </Link>
 
-            <Link
-              href="/jewellery"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
-            >
-              Jewellery
-            </Link>
-
-            <Link
-              href="/clothing"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
-            >
-              Clothing
-            </Link>
+            {parentCategories.map((cat) => {
+              const href = ["jewellery", "clothing"].includes(cat.slug) 
+                ? `/${cat.slug}` 
+                : `/shop?category=${cat.slug}`;
+              return (
+                <Link
+                  key={cat.id}
+                  href={href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm font-semibold uppercase tracking-wider text-ink hover:text-maroon py-1 border-b border-maroon/5"
+                >
+                  {cat.name}
+                </Link>
+              );
+            })}
 
             <Link
               href="/shop?filter=new_arrival"

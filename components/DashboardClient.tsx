@@ -19,9 +19,10 @@ import {
   X,
   FileImage,
   Layers,
-  MessageSquare
+  MessageSquare,
+  Inbox
 } from "lucide-react";
-import { Product, Category, SiteConfig, InstagramPost, Review } from "@/lib/types";
+import { Product, Category, SiteConfig, InstagramPost, Review, ContactEnquiry } from "@/lib/types";
 import {
   logoutAdmin,
   createProduct,
@@ -38,7 +39,8 @@ import {
   toggleFeatureReviewAction,
   removeReviewAction,
   uploadImageAction,
-  uploadCategoryImageAction
+  uploadCategoryImageAction,
+  removeContactEnquiryAction
 } from "@/lib/actions";
 
 interface DashboardClientProps {
@@ -47,6 +49,7 @@ interface DashboardClientProps {
   initialSiteConfig: SiteConfig;
   initialInstagramFeed: InstagramPost[];
   initialReviews: Review[];
+  initialEnquiries: ContactEnquiry[];
 }
 
 export default function DashboardClient({
@@ -54,11 +57,13 @@ export default function DashboardClient({
   initialCategories,
   initialSiteConfig,
   initialInstagramFeed,
-  initialReviews
+  initialReviews,
+  initialEnquiries
 }: DashboardClientProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"overview" | "products" | "inventory" | "categories" | "settings" | "instagram" | "reviews">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "products" | "inventory" | "categories" | "settings" | "instagram" | "reviews" | "enquiries">("overview");
   const [reviews, setReviews] = useState<Review[]>(initialReviews || []);
+  const [enquiries, setEnquiries] = useState<ContactEnquiry[]>(initialEnquiries || []);
   const [isUploading, setIsUploading] = useState(false);
 
   // Local state initialized with server props
@@ -81,6 +86,7 @@ export default function DashboardClient({
   const [pName, setPName] = useState("");
   const [pDesc, setPDesc] = useState("");
   const [pPrice, setPPrice] = useState<string>("");
+  const [pParentSlug, setPParentSlug] = useState("");
   const [pCategory, setPCategory] = useState("");
   const [pStatus, setPStatus] = useState<"in_stock" | "low_stock" | "out_of_stock">("in_stock");
   const [pBadge, setPBadge] = useState<Product["badge"]>(null);
@@ -88,7 +94,7 @@ export default function DashboardClient({
 
   // Form Fields - Category
   const [cName, setCName] = useState("");
-  const [cParentType, setCParentType] = useState<"jewellery" | "clothing">("jewellery");
+  const [cParentType, setCParentType] = useState<string>("root");
   const [cImageUrl, setCImageUrl] = useState("");
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isUploadingCategoryImg, setIsUploadingCategoryImg] = useState(false);
@@ -125,7 +131,13 @@ export default function DashboardClient({
     setPName("");
     setPDesc("");
     setPPrice("");
-    setPCategory(categories[0]?.id || "");
+    const parentCats = categories.filter(c => c.parent_type === "root");
+    const defaultParent = parentCats[0];
+    setPParentSlug(defaultParent?.slug || "");
+    const subsForDefaultParent = defaultParent 
+      ? categories.filter(c => c.parent_type === defaultParent.slug) 
+      : [];
+    setPCategory(subsForDefaultParent[0]?.id || "");
     setPStatus("in_stock");
     setPBadge(null);
     setPImages([""]);
@@ -139,6 +151,15 @@ export default function DashboardClient({
     setPDesc(product.description);
     setPPrice(product.price.toString());
     setPCategory(product.category_id);
+    
+    // Find parent category from product.category_id
+    const matchedSub = categories.find(c => c.id === product.category_id);
+    if (matchedSub) {
+      setPParentSlug(matchedSub.parent_type);
+    } else {
+      setPParentSlug("");
+    }
+    
     setPStatus(product.status);
     setPBadge(product.badge);
     setPImages(product.images.length > 0 ? product.images : [""]);
@@ -277,6 +298,20 @@ export default function DashboardClient({
       }
     } catch (err: any) {
       triggerAlert("error", err.message || "Failed to delete category.");
+    }
+  };
+
+  // Delete Enquiry
+  const handleDeleteEnquiry = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this enquiry?")) return;
+    try {
+      const success = await removeContactEnquiryAction(id);
+      if (success) {
+        setEnquiries(enquiries.filter((eq) => eq.id !== id));
+        triggerAlert("success", "Enquiry deleted successfully!");
+      }
+    } catch (err: any) {
+      triggerAlert("error", err.message || "Failed to delete enquiry.");
     }
   };
 
@@ -493,6 +528,7 @@ export default function DashboardClient({
               { id: "inventory", name: "Stock Manager", icon: ListCollapse },
               { id: "categories", name: "Categories", icon: Layers },
               { id: "reviews", name: "Customer Reviews", icon: MessageSquare },
+              { id: "enquiries", name: "Enquiries", icon: Inbox },
               { id: "instagram", name: "Instagram Feed", icon: Instagram },
               { id: "settings", name: "Contact Settings", icon: Settings },
             ].map((tab) => (
@@ -758,6 +794,7 @@ export default function DashboardClient({
                 onClick={() => {
                   setEditingCategory(null);
                   setCName("");
+                  setCParentType("root");
                   setCImageUrl("");
                   setCategoryModalOpen(true);
                 }}
@@ -767,16 +804,16 @@ export default function DashboardClient({
               </button>
             </div>
 
-            {/* Jewelery Categories */}
+            {/* Categories Grids */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Jewellery Section */}
+              {/* Parent Categories Section */}
               <div className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm space-y-4">
                 <h2 className="font-display text-base font-bold text-ink border-b border-maroon/5 pb-2">
-                  Jewellery Channels
+                  Parent Categories
                 </h2>
-                <div className="divide-y divide-gray-100 text-xs">
+                <div className="divide-y divide-gray-100 text-xs max-h-[400px] overflow-y-auto pr-1">
                   {categories
-                    .filter((c) => c.parent_type === "jewellery")
+                    .filter((c) => c.parent_type === "root")
                     .map((c) => (
                       <div key={c.id} className="py-3 flex items-center justify-between gap-4 border-b border-gray-100 last:border-b-0">
                         <div className="flex items-center gap-3">
@@ -789,7 +826,10 @@ export default function DashboardClient({
                               </div>
                             )}
                           </div>
-                          <span className="font-bold text-ink">{c.name}</span>
+                          <div>
+                            <span className="font-bold text-ink block">{c.name}</span>
+                            <span className="text-[10px] text-ink-muted">slug: {c.slug}</span>
+                          </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
@@ -816,53 +856,133 @@ export default function DashboardClient({
                 </div>
               </div>
 
-              {/* Clothing Section */}
+              {/* Subcategories Section */}
               <div className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm space-y-4">
                 <h2 className="font-display text-base font-bold text-ink border-b border-maroon/5 pb-2">
-                  Clothing Channels
+                  Subcategories
                 </h2>
-                <div className="divide-y divide-gray-100 text-xs">
+                <div className="divide-y divide-gray-100 text-xs max-h-[400px] overflow-y-auto pr-1">
                   {categories
-                    .filter((c) => c.parent_type === "clothing")
-                    .map((c) => (
-                      <div key={c.id} className="py-3 flex items-center justify-between gap-4 border-b border-gray-100 last:border-b-0">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-ivory border border-maroon/10 overflow-hidden flex-shrink-0">
-                            {c.image_url ? (
-                              <img src={c.image_url} alt={c.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
-                                <FileImage className="w-5 h-5 text-maroon/20" />
-                              </div>
-                            )}
+                    .filter((c) => c.parent_type !== "root")
+                    .map((c) => {
+                      const parent = categories.find(p => p.slug === c.parent_type);
+                      return (
+                        <div key={c.id} className="py-3 flex items-center justify-between gap-4 border-b border-gray-100 last:border-b-0">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-ivory border border-maroon/10 overflow-hidden flex-shrink-0">
+                              {c.image_url ? (
+                                <img src={c.image_url} alt={c.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                  <FileImage className="w-5 h-5 text-maroon/20" />
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <span className="font-bold text-ink block">{c.name}</span>
+                              <span className="text-[10px] text-ink-muted">
+                                parent: {parent ? parent.name : c.parent_type}
+                              </span>
+                            </div>
                           </div>
-                          <span className="font-bold text-ink">{c.name}</span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => {
+                                setEditingCategory(c);
+                                setCName(c.name);
+                                setCParentType(c.parent_type);
+                                setCImageUrl(c.image_url || "");
+                                setCategoryModalOpen(true);
+                              }}
+                              className="text-gray-400 hover:text-gold transition-colors p-1"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCategory(c.id)}
+                              className="text-gray-400 hover:text-rose-600 transition-colors p-1"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => {
-                              setEditingCategory(c);
-                              setCName(c.name);
-                              setCParentType(c.parent_type);
-                              setCImageUrl(c.image_url || "");
-                              setCategoryModalOpen(true);
-                            }}
-                            className="text-gray-400 hover:text-gold transition-colors p-1"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteCategory(c.id)}
-                            className="text-gray-400 hover:text-rose-600 transition-colors p-1"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Tab Enquiries */}
+        {activeTab === "enquiries" && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="flex justify-between items-center pb-4 border-b border-maroon/10">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-gold tracking-widest">Enquiry Log</span>
+                <h1 className="font-display text-2xl font-bold text-ink mt-1">Contact Enquiries</h1>
+              </div>
+              <span className="text-xs font-semibold text-ink-muted bg-ivory/80 border border-maroon/5 rounded-full px-3 py-1">
+                Total Enquiries: {enquiries.length}
+              </span>
+            </div>
+
+            {enquiries.length === 0 ? (
+              <div className="p-12 text-center bg-white rounded-2xl border border-maroon/5 shadow-sm">
+                <Inbox className="w-12 h-12 text-maroon/30 mx-auto mb-4" />
+                <p className="text-sm font-bold text-ink mb-1">No enquiries found</p>
+                <p className="text-xs text-ink-muted">Enquiries submitted through the Contact Us form will appear here.</p>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl border border-maroon/5 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-ivory border-b border-maroon/10 text-ink uppercase tracking-wider text-[10px] font-bold">
+                        <th className="px-6 py-4">Customer</th>
+                        <th className="px-6 py-4">WhatsApp Number</th>
+                        <th className="px-6 py-4">Looking For</th>
+                        <th className="px-6 py-4">Message</th>
+                        <th className="px-6 py-4">Date</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 text-ink">
+                      {enquiries.map((eq) => (
+                        <tr key={eq.id} className="hover:bg-ivory/20 transition-colors">
+                          <td className="px-6 py-4 font-bold">{eq.name}</td>
+                          <td className="px-6 py-4 font-semibold text-maroon">{eq.whatsapp_number}</td>
+                          <td className="px-6 py-4">
+                            <span className="bg-gold/10 text-gold-dark font-bold px-2.5 py-1 rounded-full text-[9px] uppercase border border-gold/15">
+                              {eq.looking_for}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 max-w-xs break-words">{eq.message}</td>
+                          <td className="px-6 py-4 text-ink-muted">
+                            {eq.created_at ? new Date(eq.created_at).toLocaleDateString("en-IN", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }) : "N/A"}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <button
+                              onClick={() => handleDeleteEnquiry(eq.id)}
+                              className="text-gray-400 hover:text-rose-600 transition-colors p-1"
+                              title="Delete Enquiry"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -1150,23 +1270,6 @@ export default function DashboardClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-ink-muted">Category</label>
-                  <select
-                    value={pCategory}
-                    onChange={(e) => setPCategory(e.target.value)}
-                    className="w-full border border-maroon/10 focus:border-maroon focus:outline-none rounded px-3 py-2 text-xs bg-white"
-                  >
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} ({c.parent_type})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
                   <label className="text-[10px] uppercase font-bold text-ink-muted">Stock Status</label>
                   <select
                     value={pStatus}
@@ -1178,6 +1281,49 @@ export default function DashboardClient({
                     <option value="out_of_stock">Out of Stock</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-ink-muted">Parent Category</label>
+                  <select
+                    value={pParentSlug}
+                    onChange={(e) => {
+                      const newParentSlug = e.target.value;
+                      setPParentSlug(newParentSlug);
+                      // Auto-select first subcategory under this parent
+                      const subcats = categories.filter(c => c.parent_type === newParentSlug);
+                      setPCategory(subcats[0]?.id || "");
+                    }}
+                    className="w-full border border-maroon/10 focus:border-maroon focus:outline-none rounded px-3 py-2 text-xs bg-white"
+                  >
+                    <option value="">Select Parent Category</option>
+                    {categories.filter(c => c.parent_type === "root").map((c) => (
+                      <option key={c.id} value={c.slug}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-ink-muted">Subcategory</label>
+                  <select
+                    value={pCategory}
+                    onChange={(e) => setPCategory(e.target.value)}
+                    className="w-full border border-maroon/10 focus:border-maroon focus:outline-none rounded px-3 py-2 text-xs bg-white"
+                    disabled={!pParentSlug}
+                  >
+                    <option value="">Select Subcategory</option>
+                    {categories.filter(c => c.parent_type === pParentSlug).map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] uppercase font-bold text-ink-muted">Badge Banner</label>
                   <select
@@ -1301,16 +1447,40 @@ export default function DashboardClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-ink-muted block">Parent Collection Channel</label>
+                <label className="text-[10px] uppercase font-bold text-ink-muted block">Category Level</label>
                 <select
-                  value={cParentType}
-                  onChange={(e) => setCParentType(e.target.value as any)}
+                  value={cParentType === "root" ? "parent" : "subcategory"}
+                  onChange={(e) => {
+                    if (e.target.value === "parent") {
+                      setCParentType("root");
+                    } else {
+                      const firstParent = categories.find(c => c.parent_type === "root");
+                      setCParentType(firstParent?.slug || "");
+                    }
+                  }}
                   className="w-full border border-maroon/10 focus:border-maroon focus:outline-none rounded px-3 py-2 text-xs bg-white"
                 >
-                  <option value="jewellery">Jewellery Collection</option>
-                  <option value="clothing">Clothing Collection</option>
+                  <option value="parent">Parent Category (Root)</option>
+                  <option value="subcategory">Subcategory</option>
                 </select>
               </div>
+
+              {cParentType !== "root" && (
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-ink-muted block">Parent Category</label>
+                  <select
+                    value={cParentType}
+                    onChange={(e) => setCParentType(e.target.value)}
+                    className="w-full border border-maroon/10 focus:border-maroon focus:outline-none rounded px-3 py-2 text-xs bg-white"
+                  >
+                    {categories.filter(c => c.parent_type === "root").map((c) => (
+                      <option key={c.id} value={c.slug}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Category Image Upload */}
               <div className="space-y-2">

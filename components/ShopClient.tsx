@@ -97,7 +97,23 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
 
     // 2. Category Filter
     if (selectedCategory !== "all") {
-      result = result.filter((p) => p.category_id === selectedCategory);
+      const selectedCatObj = categories.find(c => c.id === selectedCategory);
+      if (selectedCatObj) {
+        if (selectedCatObj.parent_type === "root") {
+          // Parent category selected: show products from all its subcategories
+          const subcatIds = categories
+            .filter(c => c.parent_type === selectedCatObj.slug)
+            .map(c => c.id);
+          // Also include the parent category itself just in case products are mapped directly
+          subcatIds.push(selectedCatObj.id);
+          result = result.filter((p) => subcatIds.includes(p.category_id));
+        } else {
+          // Subcategory selected: filter by category_id directly
+          result = result.filter((p) => p.category_id === selectedCategory);
+        }
+      } else {
+        result = result.filter((p) => p.category_id === selectedCategory);
+      }
     }
 
     // 3. Badge Filter
@@ -184,26 +200,51 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
               {/* Categories */}
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-gold mb-3">Categories</h3>
-                <div className="flex flex-col space-y-2 text-xs">
+                <div className="flex flex-col space-y-3 text-xs">
                   <button
                     onClick={() => setSelectedCategory("all")}
-                    className={`text-left py-1 hover:text-maroon font-semibold ${
+                    className={`text-left py-1 hover:text-maroon font-bold uppercase tracking-wider ${
                       selectedCategory === "all" ? "text-maroon pl-1.5 border-l-2 border-maroon" : "text-ink-muted"
                     }`}
                   >
                     All Collections
                   </button>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      className={`text-left py-1 hover:text-maroon font-semibold ${
-                        selectedCategory === cat.id ? "text-maroon pl-1.5 border-l-2 border-maroon" : "text-ink-muted"
-                      }`}
-                    >
-                      {cat.name}
-                    </button>
-                  ))}
+                  {categories
+                    .filter((c) => c.parent_type === "root")
+                    .map((parent) => {
+                      const subs = categories.filter((c) => c.parent_type === parent.slug);
+                      return (
+                        <div key={parent.id} className="space-y-1">
+                          <button
+                            onClick={() => setSelectedCategory(parent.id)}
+                            className={`text-left w-full py-1 hover:text-maroon font-bold ${
+                              selectedCategory === parent.id
+                                ? "text-maroon pl-1.5 border-l-2 border-maroon"
+                                : "text-ink hover:text-maroon"
+                            }`}
+                          >
+                            {parent.name}
+                          </button>
+                          {subs.length > 0 && (
+                            <div className="pl-3 flex flex-col space-y-1.5 border-l border-maroon/10 ml-1">
+                              {subs.map((sub) => (
+                                <button
+                                  key={sub.id}
+                                  onClick={() => setSelectedCategory(sub.id)}
+                                  className={`text-left py-0.5 hover:text-maroon transition-colors ${
+                                    selectedCategory === sub.id
+                                      ? "text-maroon font-bold"
+                                      : "text-ink-muted"
+                                  }`}
+                                >
+                                  {sub.name}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
 
@@ -368,32 +409,60 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
             {/* Categories */}
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-gold mb-3">Categories</h3>
-              <div className="flex flex-col space-y-2.5 text-xs">
+              <div className="flex flex-col space-y-3.5 text-xs">
                 <button
                   onClick={() => {
                     setSelectedCategory("all");
                     setMobileFiltersOpen(false);
                   }}
-                  className={`text-left py-1 font-semibold ${
+                  className={`text-left py-1 font-bold uppercase tracking-wider ${
                     selectedCategory === "all" ? "text-maroon pl-1.5 border-l-2 border-maroon" : "text-ink-muted"
                   }`}
                 >
                   All Collections
                 </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => {
-                      setSelectedCategory(cat.id);
-                      setMobileFiltersOpen(false);
-                    }}
-                    className={`text-left py-1 font-semibold ${
-                      selectedCategory === cat.id ? "text-maroon pl-1.5 border-l-2 border-maroon" : "text-ink-muted"
-                    }`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
+                {categories
+                  .filter((c) => c.parent_type === "root")
+                  .map((parent) => {
+                    const subs = categories.filter((c) => c.parent_type === parent.slug);
+                    return (
+                      <div key={parent.id} className="space-y-1.5">
+                        <button
+                          onClick={() => {
+                            setSelectedCategory(parent.id);
+                            setMobileFiltersOpen(false);
+                          }}
+                          className={`text-left w-full py-1 font-bold ${
+                            selectedCategory === parent.id
+                              ? "text-maroon pl-1.5 border-l-2 border-maroon"
+                              : "text-ink"
+                          }`}
+                        >
+                          {parent.name}
+                        </button>
+                        {subs.length > 0 && (
+                          <div className="pl-3 flex flex-col space-y-2 border-l border-maroon/10 ml-1">
+                            {subs.map((sub) => (
+                              <button
+                                key={sub.id}
+                                onClick={() => {
+                                  setSelectedCategory(sub.id);
+                                  setMobileFiltersOpen(false);
+                                }}
+                                className={`text-left py-0.5 transition-colors ${
+                                  selectedCategory === sub.id
+                                    ? "text-maroon font-bold"
+                                    : "text-ink-muted"
+                                }`}
+                              >
+                                {sub.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
 

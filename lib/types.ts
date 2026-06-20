@@ -1,9 +1,18 @@
 export interface Category {
   id: string;
   name: string;
-  parent_type: 'jewellery' | 'clothing';
+  parent_type: string;
   slug: string;
   image_url?: string;
+  created_at?: string;
+}
+
+export interface ContactEnquiry {
+  id: string;
+  name: string;
+  whatsapp_number: string;
+  looking_for: string;
+  message: string;
   created_at?: string;
 }
 
