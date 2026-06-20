@@ -61,7 +61,7 @@ export default function Header({ onCartClick }: HeaderProps) {
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled 
           ? "glass-header shadow-md py-1.5 md:py-2" 
-          : "bg-ivory/95 md:bg-transparent py-2.5 md:py-4 border-b border-maroon/5"
+          : "bg-ivory/60 backdrop-blur-md md:bg-transparent py-2.5 md:py-4 border-b border-maroon/5"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-2 md:gap-0">
@@ -191,7 +191,7 @@ export default function Header({ onCartClick }: HeaderProps) {
         </div>
 
         {/* Mobile Horizontal Swipe Navigation Bar (Directly below Logo/Icons row) */}
-        <nav className="md:hidden flex items-center overflow-x-auto whitespace-nowrap scrollbar-none py-1.5 border-t border-maroon/5 gap-6 scroll-smooth select-none touch-pan-x">
+        <nav className="md:hidden flex items-center overflow-x-auto whitespace-nowrap scrollbar-none py-2 border-t border-maroon/5 gap-6 scroll-smooth select-none touch-pan-x bg-white/20 backdrop-blur-md rounded-lg px-3 my-1 border border-white/40 shadow-sm">
           <Link
             href="/"
             className={`text-xs font-bold uppercase tracking-wider transition-colors py-1.5 px-0.5 ${

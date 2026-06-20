@@ -229,20 +229,22 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                   <Link
                     href={href}
                     key={c.id}
-                    className="group relative block rounded-2xl overflow-hidden aspect-[16/10] shadow-md hover:shadow-xl border border-maroon/5 bg-ivory transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] sm:active:scale-100 cursor-pointer"
+                    className="group relative block rounded-2xl overflow-hidden aspect-[16/10] shadow-[0_8px_32px_rgba(122,31,43,0.012)] hover:shadow-[0_20px_48px_rgba(122,31,43,0.04)] border border-maroon/5 bg-ivory transition-all duration-500 hover:scale-[1.01] active:scale-[0.99] sm:active:scale-100 cursor-pointer"
                   >
-                    <div className="absolute inset-0 bg-ink/30 z-10 transition-colors group-hover:bg-ink/40" />
+                    <div className="absolute inset-0 bg-ink/15 z-10 transition-colors group-hover:bg-ink/20" />
                     <img
                       src={c.image_url || "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80"}
                       alt={c.name}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     
-                    <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white">
-                      <h3 className="font-display text-2xl font-bold mb-3">{c.name}</h3>
-                      <span className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gold group-hover:text-white transition-colors">
-                        Explore Collection <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" />
-                      </span>
+                    <div className="absolute inset-0 z-20 p-6 sm:p-8 flex flex-col justify-end">
+                      <div className="glass-panel p-6 rounded-2xl w-full hover:bg-white/60 transition-colors duration-500 shadow-lg">
+                        <h3 className="font-display text-xl sm:text-2xl font-bold mb-2 text-ink">{c.name}</h3>
+                        <span className="inline-flex items-center text-[10px] sm:text-xs font-bold uppercase tracking-widest text-maroon hover:text-gold transition-colors">
+                          Explore Collection <ArrowRight className="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-1" />
+                        </span>
+                      </div>
                     </div>
                   </Link>
                 );
@@ -332,7 +334,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                   ),
                 },
               ].map((item, idx) => (
-                <div key={idx} className="group relative bg-ivory/30 hover:bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm hover:shadow-md transition-all duration-300">
+                <div key={idx} className="group relative glass-panel p-6 rounded-2xl hover:-translate-y-1 hover:bg-white/60 transition-all duration-500 shadow-md">
                   <div className="absolute top-4 right-6 text-5xl font-extrabold font-display text-maroon/5 group-hover:text-maroon/10 transition-colors">
                     {item.step}
                   </div>
@@ -358,18 +360,18 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {approvedFeaturedReviews.length === 0 ? (
-                <div className="col-span-full text-center py-12 bg-white rounded-2xl border border-maroon/5 shadow-sm p-8">
+                <div className="col-span-full text-center py-12 glass-panel p-8 rounded-2xl">
                   <p className="text-xs text-ink-muted italic leading-relaxed">
                     No customer reviews available yet. Be the first to share your experience.
                   </p>
                 </div>
               ) : (
                 approvedFeaturedReviews.map((rev) => (
-                  <div key={rev.id} className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm flex flex-col justify-between">
+                  <div key={rev.id} className="glass-panel p-6 rounded-2xl flex flex-col justify-between hover:-translate-y-1 hover:bg-white/60 transition-all duration-500 shadow-md hover:shadow-lg">
                     <div>
                       {/* Optional Review Image */}
                       {rev.image_url && (
-                        <div className="w-full aspect-[4/3] rounded-lg overflow-hidden mb-4 bg-ivory">
+                        <div className="w-full aspect-[4/3] rounded-lg overflow-hidden mb-4 bg-ivory/50">
                           <img
                             src={rev.image_url}
                             alt="Customer review product image"
@@ -447,7 +449,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
               </div>
 
               {/* Contact Us Form Card (7 cols) */}
-              <div id="contact" className="lg:col-span-7 bg-white p-8 rounded-2xl border border-maroon/5 shadow-sm space-y-6">
+              <div id="contact" className="lg:col-span-7 glass-panel p-8 rounded-2xl space-y-6 shimmer-effect">
                 <div>
                   <span className="text-[10px] uppercase font-bold text-gold tracking-widest">Enquiry Form</span>
                   <h3 className="font-display text-2xl font-bold text-ink mt-1">Design Consultations</h3>
@@ -467,7 +469,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                         value={contactName}
                         onChange={(e) => setContactName(e.target.value)}
                         placeholder="e.g. Ramya Patel"
-                        className="w-full border border-maroon/10 focus:border-maroon focus:outline-none rounded px-3 py-2 text-xs"
+                        className="w-full glass-input focus:outline-none rounded px-3 py-2 text-xs"
                       />
                     </div>
                     <div className="space-y-1">
@@ -478,7 +480,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                         value={contactWhatsapp}
                         onChange={(e) => setContactWhatsapp(e.target.value)}
                         placeholder="e.g. +91 97052 82684"
-                        className="w-full border border-maroon/10 focus:border-maroon focus:outline-none rounded px-3 py-2 text-xs"
+                        className="w-full glass-input focus:outline-none rounded px-3 py-2 text-xs"
                       />
                     </div>
                   </div>
@@ -488,7 +490,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                     <select
                       value={contactLookingFor}
                       onChange={(e) => setContactLookingFor(e.target.value)}
-                      className="w-full border border-maroon/10 focus:border-maroon focus:outline-none rounded px-3 py-2 text-xs bg-white"
+                      className="w-full glass-input focus:outline-none rounded px-3 py-2 text-xs bg-white/40 select-none"
                     >
                       <option value="Jewellery Customization">Jewellery Customization</option>
                       <option value="Clothing Sizing">Clothing Sizing</option>
@@ -506,14 +508,14 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                       value={contactMessage}
                       onChange={(e) => setContactMessage(e.target.value)}
                       placeholder="Specify blackbeads length, kurti size, custom design coordination request, etc..."
-                      className="w-full border border-maroon/10 focus:border-maroon focus:outline-none rounded px-3 py-2 text-xs"
+                      className="w-full glass-input focus:outline-none rounded px-3 py-2 text-xs"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmittingEnquiry}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-full maroon-gradient py-3 text-xs font-bold uppercase tracking-widest text-white shadow-md hover:shadow-lg transition-transform hover:scale-[1.01] cursor-pointer disabled:opacity-50"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-full glass-btn-maroon py-3 text-xs font-bold uppercase tracking-widest text-white shadow-md cursor-pointer disabled:opacity-50"
                   >
                     <WhatsAppIcon className="w-4 h-4 fill-current" />
                     {isSubmittingEnquiry ? "Saving Enquiry..." : "Send via WhatsApp"}

@@ -61,7 +61,7 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
   const stockInfo = getStockStatus();
 
   return (
-    <div className="group relative flex flex-col rounded-2xl bg-white overflow-hidden border border-maroon/5 shadow-[0_8px_32px_rgba(122,31,43,0.012)] hover:shadow-[0_20px_48px_rgba(122,31,43,0.04)] hover:border-maroon/10 hover:-translate-y-1 transition-all duration-700 ease-out">
+    <div className="group relative flex flex-col rounded-2xl luxury-card overflow-hidden shimmer-effect">
       {/* Product Image Wrapper */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-ivory image-zoom-trigger">
         {/* Badge Overlay */}
@@ -78,10 +78,10 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
             e.stopPropagation();
             toggleWishlist(product);
           }}
-          className={`absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full shadow-md backdrop-blur-sm transition-all duration-300 ${
+          className={`absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full shadow-md transition-all duration-300 glass-btn ${
             wishlisted
-              ? "bg-maroon text-white"
-              : "bg-white/80 text-ink-muted hover:bg-maroon hover:text-white"
+              ? "bg-maroon/90 text-white border-maroon/20"
+              : "bg-white/40 text-ink hover:bg-maroon hover:text-white"
           }`}
           aria-label="Add to Wishlist"
         >
@@ -136,8 +136,8 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
               disabled={product.status === "out_of_stock"}
               className={`w-full sm:flex-1 flex items-center justify-center gap-1.5 rounded-full py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider transition-all duration-500 ease-out ${
                 product.status === "out_of_stock"
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
-                  : "maroon-gradient text-white hover:shadow-[0_10px_24px_rgba(122,31,43,0.12)] hover:-translate-y-[1px] active:translate-y-0 cursor-pointer"
+                  ? "bg-gray-100/50 text-gray-400 cursor-not-allowed border border-gray-200/40"
+                  : "glass-btn-maroon text-white cursor-pointer"
               }`}
             >
               <ShoppingCart className="w-3.5 h-3.5" />
@@ -151,7 +151,7 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
               onClick={(e) => {
                 e.stopPropagation();
               }}
-              className="w-full sm:flex-1 flex items-center justify-center gap-1.5 rounded-full py-2.5 px-2 text-[10px] font-bold uppercase tracking-wider border border-green-500 bg-white/85 text-green-600 hover:bg-green-50/70 hover:shadow-[0_10px_24px_rgba(34,197,94,0.08)] hover:-translate-y-[1px] active:translate-y-0 transition-all duration-500 ease-out cursor-pointer text-center"
+              className="w-full sm:flex-1 flex items-center justify-center gap-1.5 rounded-full py-2.5 px-2 text-[10px] font-bold uppercase tracking-wider border border-green-500/30 bg-green-500/10 text-green-700 backdrop-blur-sm hover:bg-green-500/20 hover:border-green-500/50 hover:shadow-[0_8px_20px_rgba(34,197,94,0.12)] hover:-translate-y-[1px] active:translate-y-0 transition-all duration-500 ease-out cursor-pointer text-center font-semibold"
             >
               <WhatsAppIcon className="w-3.5 h-3.5 fill-current flex-shrink-0" />
               <span>Order on WhatsApp</span>

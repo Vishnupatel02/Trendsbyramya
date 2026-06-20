@@ -89,26 +89,153 @@ h1, h2, h3, .font-display {
   transform: scale(1.04);
 }
 
-/* Luxury Saree & Jewellery Boutique Header (Very Subtle Glass on Scroll) */
+/* Premium Glassmorphism Header (Apple style) */
 .glass-header {
-  background-color: rgba(248, 246, 241, 0.96); /* Solid Warm Ivory feel */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(122, 31, 43, 0.05);
-  box-shadow: 0 10px 30px rgba(122, 31, 43, 0.015);
+  background-color: rgba(248, 246, 241, 0.65) !important; /* Translucent warm ivory */
+  backdrop-filter: blur(28px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(130%) !important;
+  border-bottom: 1px solid rgba(122, 31, 43, 0.08) !important;
+  box-shadow: 
+    0 10px 40px rgba(122, 31, 43, 0.02),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
 }
 
-/* Solid Premium Cards (No apple transparency) */
+/* Floating Premium Glass Cards (Apple styled luxury-card) */
 .luxury-card {
-  background-color: #FFFFFF;
-  border: 1px solid rgba(122, 31, 43, 0.04);
-  box-shadow: 0 8px 32px rgba(122, 31, 43, 0.012);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(25px) saturate(120%);
+  -webkit-backdrop-filter: blur(25px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 8px 32px rgba(122, 31, 43, 0.015),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .luxury-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(122, 31, 43, 0.1);
-  box-shadow: 0 20px 48px rgba(122, 31, 43, 0.04);
+  transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.70);
+  border-color: rgba(122, 31, 43, 0.15);
+  box-shadow: 
+    0 24px 54px rgba(122, 31, 43, 0.08),
+    0 4px 12px rgba(122, 31, 43, 0.02),
+    inset 0 1px 3px rgba(255, 255, 255, 0.9);
+}
+
+/* Frosted General Glass Panel */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(25px) saturate(120%);
+  -webkit-backdrop-filter: blur(25px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.02),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Frosted general glass panel with subtle burgundy tint */
+.glass-panel-tint {
+  background: rgba(122, 31, 43, 0.03);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(122, 31, 43, 0.08);
+  box-shadow: 
+    0 10px 32px rgba(122, 31, 43, 0.02),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Glass Drawer (Cart drawer style) */
+.glass-drawer {
+  background: rgba(248, 246, 241, 0.75) !important;
+  backdrop-filter: blur(35px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(35px) saturate(130%) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 
+    -10px 0 40px rgba(122, 31, 43, 0.03),
+    inset 1px 0 1px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Premium Glass Inputs */
+.glass-input {
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(122, 31, 43, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: var(--maroon) !important;
+  box-shadow: 0 0 10px rgba(122, 31, 43, 0.05) !important;
+}
+
+/* Premium Glass Buttons */
+.glass-btn {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 4px 12px rgba(122, 31, 43, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-btn:hover {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(122, 31, 43, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 8px 20px rgba(122, 31, 43, 0.08),
+    0 0 12px rgba(122, 31, 43, 0.05);
+}
+
+.glass-btn-maroon {
+  background: rgba(122, 31, 43, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 4px 15px rgba(122, 31, 43, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-btn-maroon:hover {
+  background: rgba(122, 31, 43, 0.95);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 8px 24px rgba(122, 31, 43, 0.25),
+    0 0 15px rgba(122, 31, 43, 0.15);
+}
+
+/* Glass Shimmer Animation */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-effect::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.4) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  content: '';
+  animation: shimmer 3s infinite;
+  pointer-events: none;
 }
 
 /* Button & Link Editorial Transitions */

@@ -25,7 +25,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
       <div className="absolute inset-y-0 right-0 pl-10 max-w-full flex">
         <div
-          className={`w-screen max-w-md bg-ivory shadow-2xl flex flex-col transition-transform duration-300 transform translate-x-0`}
+          className={`w-screen max-w-md glass-drawer shadow-2xl flex flex-col transition-transform duration-300 transform translate-x-0`}
         >
           {/* Header */}
           <div className="p-6 border-b border-maroon/10 flex items-center justify-between">
@@ -63,7 +63,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 return (
                   <div
                     key={item.product.id}
-                    className="flex gap-4 p-3 bg-white rounded-lg border border-maroon/5 shadow-sm"
+                    className="flex gap-4 p-3 glass-panel rounded-lg shadow-sm hover:bg-white/60 transition-colors duration-300"
                   >
                     {/* Item Image */}
                     <div className="w-20 aspect-[3/4] bg-ivory rounded overflow-hidden shrink-0">
@@ -136,7 +136,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
           {/* Footer summary */}
           {cart.length > 0 && (
-            <div className="p-6 bg-white border-t border-maroon/10 space-y-4">
+            <div className="p-6 bg-white/40 backdrop-blur-md border-t border-maroon/10 space-y-4">
               <div className="flex justify-between items-center text-ink">
                 <span className="text-xs font-bold uppercase tracking-wider text-ink-muted">Subtotal</span>
                 <span className="font-display text-xl font-bold text-maroon">
@@ -151,7 +151,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <Link
                   href="/cart"
                   onClick={onClose}
-                  className="flex items-center justify-center w-full rounded-full maroon-gradient py-3 text-xs font-bold uppercase tracking-widest text-white shadow-md hover:shadow-lg transition-all"
+                  className="flex items-center justify-center w-full rounded-full glass-btn-maroon py-3 text-xs font-bold uppercase tracking-widest text-white shadow-md transition-all"
                 >
                   View Cart & Enquiry
                 </Link>

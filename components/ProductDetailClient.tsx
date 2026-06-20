@@ -321,7 +321,7 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
                 {/* WhatsApp Quick Enquiry Button */}
                 <button
                   onClick={handleEnquireNow}
-                  className="w-full flex items-center justify-center gap-2 rounded-full border border-green-200 bg-green-50 hover:bg-green-100 py-3 text-xs font-bold uppercase tracking-widest text-green-700 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 rounded-full border border-green-500/30 bg-green-500/10 text-green-700 backdrop-blur-sm hover:bg-green-500/20 hover:border-green-500/50 hover:shadow-[0_8px_20px_rgba(34,197,94,0.12)] py-3 text-xs font-bold uppercase tracking-widest transition-all duration-500 cursor-pointer"
                 >
                   <MessageSquare className="w-4 h-4" /> Enquire on WhatsApp
                 </button>
@@ -329,15 +329,15 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
 
               {/* Luxury Badges Cards */}
               <div className="grid grid-cols-3 gap-3 pt-6 border-t border-maroon/10">
-                <div className="flex flex-col items-center text-center p-2 rounded-lg bg-ivory/50 border border-maroon/5">
+                <div className="flex flex-col items-center text-center p-3 rounded-xl glass-panel-tint hover:bg-white/40 hover:-translate-y-0.5 transition-all duration-300">
                   <Truck className="w-4 h-4 text-maroon mb-1" />
                   <span className="text-[9px] font-bold text-ink uppercase tracking-wider">Secure Shipping</span>
                 </div>
-                <div className="flex flex-col items-center text-center p-2 rounded-lg bg-ivory/50 border border-maroon/5">
+                <div className="flex flex-col items-center text-center p-3 rounded-xl glass-panel-tint hover:bg-white/40 hover:-translate-y-0.5 transition-all duration-300">
                   <ShieldCheck className="w-4 h-4 text-maroon mb-1" />
                   <span className="text-[9px] font-bold text-ink uppercase tracking-wider">Premium Quality</span>
                 </div>
-                <div className="flex flex-col items-center text-center p-2 rounded-lg bg-ivory/50 border border-maroon/5">
+                <div className="flex flex-col items-center text-center p-3 rounded-xl glass-panel-tint hover:bg-white/40 hover:-translate-y-0.5 transition-all duration-300">
                   <RefreshCw className="w-4 h-4 text-maroon mb-1" />
                   <span className="text-[9px] font-bold text-ink uppercase tracking-wider">Easy Exchange</span>
                 </div>
@@ -355,7 +355,7 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
                 </h2>
                 
                 {productReviews.length === 0 ? (
-                  <div className="p-8 bg-ivory/40 rounded-2xl border border-maroon/5 text-center">
+                  <div className="p-8 glass-panel rounded-2xl text-center">
                     <p className="text-sm text-ink-muted italic">
                       No customer reviews available yet. Be the first to share your experience.
                     </p>
@@ -363,7 +363,7 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
                 ) : (
                   <div className="space-y-6">
                     {productReviews.map((rev) => (
-                      <div key={rev.id} className="p-6 bg-white rounded-2xl border border-maroon/5 shadow-sm space-y-3">
+                      <div key={rev.id} className="p-6 glass-panel rounded-2xl shadow-sm space-y-3 hover:bg-white/60 hover:-translate-y-0.5 transition-all duration-300">
                         <div className="flex justify-between items-start">
                           <div>
                             <div className="flex gap-1 text-gold">
@@ -402,7 +402,7 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
               </div>
 
               {/* Submission Form */}
-              <div className="lg:col-span-5 bg-ivory/30 border border-maroon/5 p-6 sm:p-8 rounded-3xl">
+              <div className="lg:col-span-5 glass-panel p-6 sm:p-8 rounded-3xl shimmer-effect">
                 <h3 className="font-display text-xl font-bold text-ink mb-2">Write a Review</h3>
                 <p className="text-xs text-ink-muted mb-6">
                   Share your styling experience with other shoppers. Reviews are moderated and will appear once approved.
@@ -439,7 +439,7 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
                         value={reviewName}
                         onChange={(e) => setReviewName(e.target.value)}
                         placeholder="Enter your name"
-                        className="w-full bg-white border border-maroon/10 focus:border-maroon rounded-xl px-4 py-3 text-xs text-ink outline-none"
+                        className="w-full glass-input focus:outline-none rounded-xl px-4 py-3 text-xs text-ink"
                       />
                     </div>
 
@@ -476,7 +476,7 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
                         value={reviewComment}
                         onChange={(e) => setReviewComment(e.target.value)}
                         placeholder="What did you like or dislike about this product?"
-                        className="w-full bg-white border border-maroon/10 focus:border-maroon rounded-xl px-4 py-3 text-xs text-ink outline-none resize-none"
+                        className="w-full glass-input focus:outline-none rounded-xl px-4 py-3 text-xs text-ink resize-none"
                       ></textarea>
                     </div>
 
@@ -493,14 +493,14 @@ export default function ProductDetailClient({ product, category, siteConfig, rev
                             setReviewImageFile(e.target.files[0]);
                           }
                         }}
-                        className="w-full text-xs text-ink-muted file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-maroon/5 file:text-maroon file:cursor-pointer file:hover:bg-maroon/10 border border-dashed border-maroon/20 p-3 rounded-xl bg-white"
+                        className="w-full text-xs text-ink-muted file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-maroon/10 file:text-maroon file:cursor-pointer file:hover:bg-maroon/20 border border-dashed border-maroon/20 p-3 rounded-xl glass-input"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full inline-flex items-center justify-center rounded-full maroon-gradient py-3 text-xs font-bold uppercase tracking-widest text-white shadow-md cursor-pointer disabled:opacity-50"
+                      className="w-full inline-flex items-center justify-center rounded-full glass-btn-maroon py-3 text-xs font-bold uppercase tracking-widest text-white shadow-md cursor-pointer disabled:opacity-50"
                     >
                       {isSubmitting ? "Submitting..." : "Submit Review"}
                     </button>

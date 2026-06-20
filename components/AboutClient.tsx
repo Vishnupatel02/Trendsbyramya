@@ -81,7 +81,7 @@ export default function AboutClient() {
             </div>
 
             {/* Brand Logo & Presentation */}
-            <div className="flex justify-center items-center bg-ivory p-12 rounded-3xl border border-maroon/5 shadow-sm max-w-lg mx-auto w-full aspect-square">
+            <div className="flex justify-center items-center glass-panel p-12 rounded-3xl max-w-lg mx-auto w-full aspect-square shimmer-effect">
               <div className="text-center">
                 <img
                   src="/logo.jpg"
@@ -106,7 +106,7 @@ export default function AboutClient() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
               {coreValues.map((val, idx) => (
-                <div key={idx} className="flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-maroon/5 shadow-sm">
+                <div key={idx} className="flex flex-col items-center text-center p-6 glass-panel rounded-2xl hover:-translate-y-1 hover:bg-white/60 transition-all duration-500 shadow-md">
                   <div className="p-3 bg-maroon/5 rounded-full text-maroon mb-4">
                     <val.icon className="w-6 h-6" />
                   </div>

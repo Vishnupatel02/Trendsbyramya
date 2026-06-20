@@ -167,7 +167,7 @@ export default function ContactClient() {
             </div>
 
             {/* Right: Quick WhatsApp Enquiry Form (7 cols) */}
-            <div className="lg:col-span-7 bg-ivory/40 border border-maroon/5 p-8 sm:p-10 rounded-3xl shadow-sm">
+            <div className="lg:col-span-7 glass-panel p-8 sm:p-10 rounded-3xl shadow-md shimmer-effect">
               <h3 className="font-display text-2xl font-bold text-ink mb-2">Send WhatsApp Enquiry</h3>
               <p className="text-xs text-ink-muted mb-6">
                 Fill out this quick form and click the button to generate a structured message. It will open in your WhatsApp automatically!
@@ -185,7 +185,7 @@ export default function ContactClient() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your full name"
-                    className="w-full bg-white border border-maroon/10 focus:border-maroon rounded-xl px-4 py-3.5 text-xs text-ink outline-none transition-colors"
+                    className="w-full glass-input focus:outline-none rounded-xl px-4 py-3.5 text-xs text-ink"
                   />
                 </div>
 
@@ -200,7 +200,7 @@ export default function ContactClient() {
                     value={whatsapp}
                     onChange={(e) => setWhatsapp(e.target.value)}
                     placeholder="Enter your WhatsApp number (e.g. +91 97052 82684)"
-                    className="w-full bg-white border border-maroon/10 focus:border-maroon rounded-xl px-4 py-3.5 text-xs text-ink outline-none transition-colors"
+                    className="w-full glass-input focus:outline-none rounded-xl px-4 py-3.5 text-xs text-ink"
                   />
                 </div>
 
@@ -212,7 +212,7 @@ export default function ContactClient() {
                     id="enquiry-type"
                     value={queryType}
                     onChange={(e) => setQueryType(e.target.value)}
-                    className="w-full bg-white border border-maroon/10 focus:border-maroon rounded-xl px-4 py-3.5 text-xs text-ink outline-none transition-colors cursor-pointer"
+                    className="w-full glass-input focus:outline-none rounded-xl px-4 py-3.5 text-xs text-ink bg-white/40 select-none cursor-pointer"
                   >
                     <option value="Jewellery Customization">Jewellery Customization</option>
                     <option value="Clothing Sizing">Clothing Sizing</option>
@@ -233,14 +233,14 @@ export default function ContactClient() {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Describe your design customisation, desired lengths, sizes or specific requirements..."
-                    className="w-full bg-white border border-maroon/10 focus:border-maroon rounded-xl px-4 py-3.5 text-xs text-ink outline-none transition-colors resize-none"
+                    className="w-full glass-input focus:outline-none rounded-xl px-4 py-3.5 text-xs text-ink resize-none"
                   ></textarea>
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full inline-flex items-center justify-center rounded-full maroon-gradient px-8 py-4 text-xs font-bold uppercase tracking-widest text-white shadow-md hover:shadow-lg transition-transform hover:scale-[1.01] disabled:opacity-50"
+                  className="w-full inline-flex items-center justify-center rounded-full glass-btn-maroon px-8 py-4 text-xs font-bold uppercase tracking-widest text-white shadow-md cursor-pointer disabled:opacity-50"
                 >
                   <Send className="w-4 h-4 mr-2" /> {isSubmitting ? "Sending..." : "Start WhatsApp Chat"}
                 </button>
