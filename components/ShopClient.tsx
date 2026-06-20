@@ -120,6 +120,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
     }
 
     // 2. Category Filter
+    let categoryFiltered = [...result];
     if (selectedCategory !== "all") {
       const selectedCatObj = categories.find(
         (c) => c.id === selectedCategory || c.slug === selectedCategory
@@ -150,7 +151,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
 
           console.log("Parent Category Selected. Subcategories found:", subcategories.map(c => ({ id: c.id, slug: c.slug, name: c.name })));
 
-          result = result.filter((p) => {
+          categoryFiltered = result.filter((p) => {
             const pCatId = (p.category_id || "").trim().toLowerCase();
             const matchedCat = categories.find(c => c.id === p.category_id || c.slug === p.category_id);
             const isMatched = subcatIds.some((id) => id.trim().toLowerCase() === pCatId) ||
@@ -174,7 +175,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
           });
         } else {
           // Subcategory selected: filter by category_id directly (using robust comparison)
-          result = result.filter((p) => {
+          categoryFiltered = result.filter((p) => {
             const pCatId = (p.category_id || "").trim().toLowerCase();
             const selCatId = selectedCatObj.id.trim().toLowerCase();
             const selCatSlug = selectedCatObj.slug.trim().toLowerCase();
@@ -203,7 +204,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
         }
       } else {
         // Fallback filter by ID/slug direct match if selectedCatObj not found
-        result = result.filter((p) => {
+        categoryFiltered = result.filter((p) => {
           const pCatId = (p.category_id || "").trim().toLowerCase();
           const selCat = selectedCategory.trim().toLowerCase();
           const isMatched = pCatId === selCat || pCatId.replace(/-+$/g, "") === selCat.replace(/-+$/g, "");
@@ -226,6 +227,7 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
         });
       }
     }
+    result = [...categoryFiltered];
 
     // 3. Badge Filter
     if (selectedBadge !== "all") {
@@ -252,6 +254,10 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
     } else if (sortBy === "newest") {
       result.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
     }
+
+    console.log("All Products:", products.length);
+    console.log("Category Filtered:", categoryFiltered.length);
+    console.log("Final Displayed:", result.length);
 
     return result;
   }, [products, searchQuery, selectedCategory, selectedBadge, selectedAvailability, maxPrice, sortBy, wishlist]);
