@@ -272,6 +272,12 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
     router.push("/shop");
   };
 
+  console.log("=== SHOP RENDER PIPELINE LOGS ===");
+  console.log("totalProducts:", products.length);
+  console.log("filteredProducts.length:", filteredProducts.length);
+  console.log("displayedProducts.length:", filteredProducts.length);
+  console.log("products passed to ProductGrid:", filteredProducts.map(p => ({ id: p.id, name: p.name })));
+
   return (
     <>
       <Header onCartClick={() => setCartOpen(true)} />
@@ -483,13 +489,16 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                  {filteredProducts.map((prod) => (
-                    <ProductCard
-                      key={prod.id}
-                      product={prod}
-                      categoryName={categories.find((c) => c.id === prod.category_id)?.name}
-                    />
-                  ))}
+                  {filteredProducts.map((prod) => {
+                    console.log("product passed to ProductCard:", { id: prod.id, name: prod.name });
+                    return (
+                      <ProductCard
+                        key={prod.id}
+                        product={prod}
+                        categoryName={categories.find((c) => c.id === prod.category_id)?.name}
+                      />
+                    );
+                  })}
                 </div>
               )}
             </div>
