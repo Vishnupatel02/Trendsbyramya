@@ -118,7 +118,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
   const iconWidth = "w-[500px] sm:w-[380px] md:w-[480px] lg:w-[clamp(500px,38vw,680px)]";
   const iconHeight = "h-[500px] sm:h-[380px] md:h-[480px] lg:h-[clamp(500px,38vw,680px)]";
   const iconTop = "top-[26%] md:top-1/2";
-  const iconLeftMobile = "left-[20%] -translate-x-1/2"; // Adjust mobile horizontal position (e.g., left-[40%] or left-[60%])
+  const iconLeftMobile = "left-[30%] -translate-x-1/2"; // Adjust mobile horizontal position (e.g., left-[40%] or left-[60%])
   const iconRight = "md:right-[16%]"; // Position relative to the right boundary on desktop
 
   // ==========================================
@@ -126,7 +126,7 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
   // ==========================================
   const textSize = "w-[240px] h-[133px] sm:w-[300px] sm:h-[167px] md:w-[360px] md:h-[200px] lg:w-[clamp(380px,29vw,510px)] lg:h-[clamp(210px,16vw,283px)]";
   const textTop = "top-[20%] md:top-1/2";
-  const textLeftMobile = "left-[60%] -translate-x-1/2"; // Adjust mobile horizontal position (e.g., left-[40%] or left-[60%])
+  const textLeftMobile = "left-[80%] -translate-x-1/2"; // Adjust mobile horizontal position (e.g., left-[40%] or left-[60%])
   const textRight = "md:right-[12%]"; // Shift text slightly to the right of the dress icon
   const textOpacity = "opacity-[0.40]"; // Opacity around 20-25%
 
