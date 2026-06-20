@@ -191,7 +191,11 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                   ? `/${c.slug}` 
                   : `/shop?category=${c.slug}`;
                 return (
-                  <div key={c.id} className="group relative rounded-2xl overflow-hidden aspect-[16/10] shadow-md border border-maroon/5 bg-ivory">
+                  <Link
+                    href={href}
+                    key={c.id}
+                    className="group relative block rounded-2xl overflow-hidden aspect-[16/10] shadow-md hover:shadow-xl border border-maroon/5 bg-ivory transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] sm:active:scale-100 cursor-pointer"
+                  >
                     <div className="absolute inset-0 bg-ink/30 z-10 transition-colors group-hover:bg-ink/40" />
                     <img
                       src={c.image_url || "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80"}
@@ -201,14 +205,11 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                     
                     <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white">
                       <h3 className="font-display text-2xl font-bold mb-3">{c.name}</h3>
-                      <Link
-                        href={href}
-                        className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gold hover:text-white transition-colors"
-                      >
-                        Explore Collection <ArrowRight className="w-4 h-4 ml-1.5" />
-                      </Link>
+                      <span className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gold group-hover:text-white transition-colors">
+                        Explore Collection <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" />
+                      </span>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
