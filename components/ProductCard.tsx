@@ -61,7 +61,7 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
   const stockInfo = getStockStatus();
 
   return (
-    <div className="group relative flex flex-col rounded-xl bg-white overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-maroon/5">
+    <div className="group relative flex flex-col rounded-2xl bg-white/95 overflow-hidden border border-maroon/5 shadow-[0_4px_24px_rgba(122,31,43,0.02)] hover:shadow-[0_16px_48px_rgba(122,31,43,0.06)] hover:border-maroon/10 hover:-translate-y-1.5 transition-all duration-500 ease-out">
       {/* Product Image Wrapper */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-ivory image-zoom-trigger">
         {/* Badge Overlay */}
@@ -134,10 +134,10 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
                 }
               }}
               disabled={product.status === "out_of_stock"}
-              className={`w-full sm:flex-1 flex items-center justify-center gap-1.5 rounded-full py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider shadow-sm transition-all duration-300 ${
+              className={`w-full sm:flex-1 flex items-center justify-center gap-1.5 rounded-full py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ease-out ${
                 product.status === "out_of_stock"
-                  ? "bg-gray-150 text-gray-400 cursor-not-allowed border border-gray-200"
-                  : "maroon-gradient text-white hover:shadow-md hover:scale-[1.02] cursor-pointer"
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+                  : "maroon-gradient text-white hover:shadow-[0_8px_20px_rgba(122,31,43,0.18)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
               }`}
             >
               <ShoppingCart className="w-3.5 h-3.5" />
@@ -151,7 +151,7 @@ export default function ProductCard({ product, categoryName = "Jewellery", whats
               onClick={(e) => {
                 e.stopPropagation();
               }}
-              className="w-full sm:flex-1 flex items-center justify-center gap-1 rounded-full py-2.5 px-2 text-[10px] font-bold uppercase tracking-wider border border-green-500 bg-white hover:bg-green-50 text-green-600 transition-all duration-300 shadow-sm hover:scale-[1.02] cursor-pointer text-center"
+              className="w-full sm:flex-1 flex items-center justify-center gap-1.5 rounded-full py-2.5 px-2 text-[10px] font-bold uppercase tracking-wider border border-green-500 bg-white/85 text-green-600 hover:bg-green-50/70 hover:shadow-[0_8px_20px_rgba(34,197,94,0.12)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 ease-out cursor-pointer text-center"
             >
               <WhatsAppIcon className="w-3.5 h-3.5 fill-current flex-shrink-0" />
               <span>Order on WhatsApp</span>

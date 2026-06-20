@@ -3,6 +3,8 @@
 :root {
   --background: #F8F6F1;
   --foreground: #222222;
+  --maroon: #7A1F2B;
+  --gold: #C9A227;
 }
 
 @theme {
@@ -18,34 +20,38 @@
   --font-sans: var(--font-montserrat), sans-serif;
 }
 
-/* Base Body Styles */
+/* Base Body & Layout Styles */
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
+/* Modern Luxury Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F8F6F1;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #C9A227;
-  border-radius: 4px;
+  background: rgba(122, 31, 43, 0.15);
+  border-radius: 99px;
+  transition: background 0.3s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #7A1F2B;
+  background: rgba(122, 31, 43, 0.35);
 }
 
 /* Luxury Animations & Transitions */
 .gold-gradient {
   background: linear-gradient(135deg, #C9A227 0%, #DFB93E 50%, #C9A227 100%);
   background-size: 200% auto;
-  transition: background-position 0.5s ease;
+  transition: background-position 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease, box-shadow 0.3s ease;
 }
 .gold-gradient:hover {
   background-position: right center;
@@ -54,7 +60,7 @@ body {
 .maroon-gradient {
   background: linear-gradient(135deg, #7A1F2B 0%, #9E2B3A 50%, #7A1F2B 100%);
   background-size: 200% auto;
-  transition: background-position 0.5s ease;
+  transition: background-position 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease, box-shadow 0.3s ease;
 }
 .maroon-gradient:hover {
   background-position: right center;
@@ -66,19 +72,62 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-/* Smooth zoom transition */
+/* Smooth zoom transition for images */
+.image-zoom-trigger {
+  overflow: hidden;
+}
 .image-zoom-trigger img {
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .image-zoom-trigger:hover img {
-  transform: scale(1.08);
+  transform: scale(1.06);
 }
 
-/* Glassmorphism Classes */
+/* Glassmorphism Elements (Apple-Inspired) */
 .glass-header {
-  background-color: rgba(248, 246, 241, 0.85);
+  background-color: rgba(248, 246, 241, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(122, 31, 43, 0.06);
+}
+
+.glass-card {
+  background-color: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(122, 31, 43, 0.08);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.015);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card:hover {
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(122, 31, 43, 0.12);
+  box-shadow: 0 16px 40px rgba(122, 31, 43, 0.05);
+}
+
+/* Luxury shadows using brand-integrated hues */
+.luxury-shadow {
+  box-shadow: 0 4px 20px rgba(122, 31, 43, 0.02);
+}
+.luxury-card-hover {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.luxury-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(122, 31, 43, 0.06);
+  border-color: rgba(122, 31, 43, 0.12);
+}
+
+/* Button & Link Interactions */
+.luxury-btn-transition {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.luxury-btn-transition:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 24px rgba(122, 31, 43, 0.16);
+}
+.luxury-btn-transition:active {
+  transform: translateY(0);
 }
 
 /* Keyframe animations */
@@ -88,7 +137,7 @@ body {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Hide scrollbar visually but maintain scrolling functionality */
