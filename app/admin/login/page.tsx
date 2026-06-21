@@ -117,14 +117,6 @@ export default function AdminLoginPage() {
             {loading ? "Authenticating..." : "Login to Control Panel"}
           </button>
         </form>
-
-        {/* Mock Mode Reminder Box */}
-        <div className="p-4 bg-gold/5 rounded-xl border border-gold/10 text-[10px] text-ink-muted/80 leading-relaxed">
-          <span className="font-bold text-gold-light uppercase tracking-wider block mb-1">Local Mock Mode</span>
-          If you are running in local mode without Supabase environment variables, use the default admin credentials:<br />
-          <span className="font-semibold text-ink">Email:</span> <code className="bg-white/50 px-1 py-0.5 rounded">admin@trendsbyramya.com</code><br />
-          <span className="font-semibold text-ink">Password:</span> <code className="bg-white/50 px-1 py-0.5 rounded">adminpassword123</code>
-        </div>
       </div>
     </main>
   );
