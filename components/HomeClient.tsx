@@ -231,20 +231,18 @@ export default function HomeClient({ products, categories, instagramFeed, siteCo
                     key={c.id}
                     className="group relative block rounded-2xl overflow-hidden aspect-[16/10] shadow-[0_8px_32px_rgba(122,31,43,0.012)] hover:shadow-[0_20px_48px_rgba(122,31,43,0.04)] border border-maroon/5 bg-ivory transition-all duration-500 hover:scale-[1.01] active:scale-[0.99] sm:active:scale-100 cursor-pointer"
                   >
-                    <div className="absolute inset-0 bg-ink/15 z-10 transition-colors group-hover:bg-ink/20" />
+                    <div className="absolute inset-0 bg-ink/30 z-10 transition-colors group-hover:bg-ink/40" />
                     <img
                       src={c.image_url || "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80"}
                       alt={c.name}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     
-                    <div className="absolute inset-0 z-20 p-6 sm:p-8 flex flex-col justify-end">
-                      <div className="glass-panel p-6 rounded-2xl w-full hover:bg-white/60 transition-colors duration-500 shadow-lg">
-                        <h3 className="font-display text-xl sm:text-2xl font-bold mb-2 text-ink">{c.name}</h3>
-                        <span className="inline-flex items-center text-[10px] sm:text-xs font-bold uppercase tracking-widest text-maroon hover:text-gold transition-colors">
-                          Explore Collection <ArrowRight className="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-1" />
-                        </span>
-                      </div>
+                    <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white">
+                      <h3 className="font-display text-2xl font-bold mb-3">{c.name}</h3>
+                      <span className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gold group-hover:text-white transition-colors">
+                        Explore Collection <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" />
+                      </span>
                     </div>
                   </Link>
                 );
