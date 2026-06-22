@@ -74,9 +74,10 @@ export default function CategoryPageClient({
                 "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80";
 
               return (
-                <div
+                <Link
+                  href={`/shop?category=${category.slug}`}
                   key={category.id}
-                  className="group relative rounded-2xl overflow-hidden aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] shadow-md border border-maroon/5 bg-ivory flex flex-col justify-end transition-all duration-300 hover:shadow-lg"
+                  className="group relative block rounded-2xl overflow-hidden aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] shadow-md border border-maroon/5 bg-ivory flex flex-col justify-end transition-all duration-500 hover:scale-[1.015] hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] sm:active:scale-100 cursor-pointer"
                 >
                   {/* Background Image */}
                   <div className="absolute inset-0 bg-ink/30 z-10 transition-colors group-hover:bg-ink/40" />
@@ -93,14 +94,13 @@ export default function CategoryPageClient({
                     <h2 className="font-display text-xl sm:text-2xl font-bold mb-2 tracking-wide">
                       {category.name}
                     </h2>
-                    <Link
-                      href={`/shop?category=${category.slug}`}
-                      className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gold hover:text-white transition-colors"
+                    <span
+                      className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gold group-hover:text-white transition-colors cursor-pointer"
                     >
                       Shop Now <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" />
-                    </Link>
+                    </span>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
