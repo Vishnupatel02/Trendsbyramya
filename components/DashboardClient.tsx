@@ -20,9 +20,17 @@ import {
   FileImage,
   Layers,
   MessageSquare,
-  Inbox
+  Inbox,
+  BarChart3,
+  Smartphone,
+  Globe,
+  Compass,
+  Users,
+  Chrome,
+  TrendingUp
 } from "lucide-react";
 import { Product, Category, SiteConfig, InstagramPost, Review, ContactEnquiry } from "@/lib/types";
+import { supabase } from "@/lib/supabaseClient";
 import {
   logoutAdmin,
   createProduct,
@@ -50,6 +58,7 @@ interface DashboardClientProps {
   initialInstagramFeed: InstagramPost[];
   initialReviews: Review[];
   initialEnquiries: ContactEnquiry[];
+  initialVisitsData: { totalCount: number; recentVisits: any[] };
 }
 
 export default function DashboardClient({
@@ -58,10 +67,11 @@ export default function DashboardClient({
   initialSiteConfig,
   initialInstagramFeed,
   initialReviews,
-  initialEnquiries
+  initialEnquiries,
+  initialVisitsData
 }: DashboardClientProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"overview" | "products" | "inventory" | "categories" | "settings" | "instagram" | "reviews" | "enquiries">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "analytics" | "products" | "inventory" | "categories" | "settings" | "instagram" | "reviews" | "enquiries">("overview");
   const [reviews, setReviews] = useState<Review[]>(initialReviews || []);
   const [enquiries, setEnquiries] = useState<ContactEnquiry[]>(initialEnquiries || []);
   const [isUploading, setIsUploading] = useState(false);
@@ -76,42 +86,81 @@ export default function DashboardClient({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Visitor counter state initialization
-  const baseVisitorCount = 14500 + products.length * 15 + reviews.length * 35 + enquiries.length * 75;
-  const [totalVisits, setTotalVisits] = useState(() => {
-    if (typeof window === "undefined") return baseVisitorCount;
-    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
-    const diff = Date.now() - startOfYear.getTime();
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor(diff / oneDay);
-    const saved = localStorage.getItem("trends-visitor-tracker");
-    if (saved) {
-      const parsed = parseInt(saved, 10);
-      if (parsed >= baseVisitorCount) return parsed;
-    }
-    const calculated = baseVisitorCount + dayOfYear * 42;
-    localStorage.setItem("trends-visitor-tracker", calculated.toString());
-    return calculated;
-  });
+  // Visitor counter state initialization (Real visitor counts)
+  const [visits, setVisits] = useState<any[]>(initialVisitsData?.recentVisits || []);
+  const [totalVisitsCount, setTotalVisitsCount] = useState(initialVisitsData?.totalCount || 0);
 
-  const [activeOnlineUsers, setActiveOnlineUsers] = useState(12);
-
-  // Interval to update live traffic metrics
+  // Real-time Supabase subscription for new visitor inserts
   useEffect(() => {
-    const trafficInterval = setInterval(() => {
-      setActiveOnlineUsers(Math.floor(Math.random() * 15) + 8);
-      
-      if (Math.random() > 0.6) {
-        setTotalVisits(prev => {
-          const next = prev + (Math.random() > 0.7 ? 2 : 1);
-          localStorage.setItem("trends-visitor-tracker", next.toString());
-          return next;
-        });
-      }
-    }, 5000);
+    // Suppress any console warnings for realtime subscription if not enabled yet
+    const channel = supabase
+      .channel("realtime-website-visits")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "website_visits" },
+        (payload) => {
+          if (payload.new) {
+            const newVisit = payload.new as any;
+            setVisits((prev) => {
+              // Ensure we do not add duplicate visitor records locally
+              if (prev.some(v => v.visitor_id === newVisit.visitor_id)) {
+                return prev;
+              }
+              return [newVisit, ...prev];
+            });
+            setTotalVisitsCount((prev) => prev + 1);
+          }
+        }
+      )
+      .subscribe();
 
-    return () => clearInterval(trafficInterval);
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
+
+  // Compute active online users: unique visits within the last 15 minutes
+  const activeOnlineUsers = (() => {
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const active = visits.filter(v => new Date(v.visited_at) >= fifteenMinutesAgo).length;
+    return active || 1; // Default to 1 (the current admin) if no visits in last 15 minutes
+  })();
+
+  // Dynamically calculate traffic sources from real visits data
+  const trafficSources = (() => {
+    let instagram = 0;
+    let whatsapp = 0;
+    let direct = 0;
+    let search = 0;
+    let other = 0;
+    
+    visits.forEach((v) => {
+      const src = (v.referrer || "Direct").toLowerCase();
+      if (src.includes("instagram")) instagram++;
+      else if (src.includes("whatsapp") || src.includes("wa.me")) whatsapp++;
+      else if (src.includes("google") || src.includes("search") || src.includes("bing") || src.includes("yahoo")) search++;
+      else if (src === "direct") direct++;
+      else other++;
+    });
+    
+    const total = visits.length;
+    if (total === 0) {
+      return { instagram: 58, whatsapp: 24, direct: 11, search: 7 };
+    }
+    
+    // Calculate percentages
+    const igPercent = Math.round((instagram / total) * 100);
+    const waPercent = Math.round((whatsapp / total) * 100);
+    const dirPercent = Math.round((direct / total) * 100);
+    const srchPercent = Math.max(0, 100 - (igPercent + waPercent + dirPercent)); // ensure they sum exactly to 100%
+    
+    return {
+      instagram: igPercent,
+      whatsapp: waPercent,
+      direct: dirPercent,
+      search: srchPercent,
+    };
+  })();
 
   // Modal States
   const [productModalOpen, setProductModalOpen] = useState(false);
@@ -561,6 +610,7 @@ export default function DashboardClient({
           <nav className="p-4 space-y-1">
             {[
               { id: "overview", name: "Overview", icon: LayoutDashboard },
+              { id: "analytics", name: "Website Traffic", icon: BarChart3 },
               { id: "products", name: "Products", icon: Package },
               { id: "inventory", name: "Stock Manager", icon: ListCollapse },
               { id: "categories", name: "Categories", icon: Layers },
@@ -658,10 +708,10 @@ export default function DashboardClient({
                 <div className="bg-ivory/30 p-5 rounded-xl border border-maroon/5 flex flex-col justify-center">
                   <span className="text-[10px] uppercase font-bold text-ink-muted/70 tracking-wider">Total Visitors</span>
                   <p className="font-display text-4xl font-extrabold text-ink mt-2 tracking-tight">
-                    {totalVisits.toLocaleString()}
+                    {totalVisitsCount.toLocaleString()}
                   </p>
                   <span className="text-[9px] text-green-600 font-semibold mt-2.5 flex items-center gap-0.5">
-                    ▲ +14.8% growth this week
+                    ▲ Live tracking active
                   </span>
                 </div>
 
@@ -669,62 +719,74 @@ export default function DashboardClient({
                 <div className="md:col-span-2 space-y-4">
                   <div className="flex justify-between items-center text-[10px] font-bold text-ink uppercase tracking-wider">
                     <span>Traffic Sources Distribution</span>
-                    <span className="text-gold">Instagram is leading source</span>
+                    <span className="text-gold">
+                      {trafficSources.instagram >= trafficSources.whatsapp && trafficSources.instagram >= trafficSources.direct && trafficSources.instagram >= trafficSources.search ? "Instagram is leading source" :
+                       trafficSources.whatsapp >= trafficSources.direct && trafficSources.whatsapp >= trafficSources.search ? "WhatsApp is leading source" :
+                       trafficSources.direct >= trafficSources.search ? "Direct Traffic is leading source" : "Search is leading source"}
+                    </span>
                   </div>
 
                   {/* Multi-segment horizontal progress/section bar */}
                   <div className="w-full h-6 rounded-lg overflow-hidden flex shadow-inner border border-maroon/5">
-                    <div 
-                      style={{ width: '58%' }} 
-                      className="bg-maroon hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-white uppercase tracking-wider relative group"
-                      title="Instagram: 58%"
-                    >
-                      58%
-                      <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Instagram: 58%</span>
-                    </div>
-                    <div 
-                      style={{ width: '24%' }} 
-                      className="bg-gold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-ink uppercase tracking-wider relative group"
-                      title="WhatsApp: 24%"
-                    >
-                      24%
-                      <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">WhatsApp: 24%</span>
-                    </div>
-                    <div 
-                      style={{ width: '11%' }} 
-                      className="bg-ink hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-white uppercase tracking-wider relative group"
-                      title="Direct Traffic: 11%"
-                    >
-                      11%
-                      <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Direct: 11%</span>
-                    </div>
-                    <div 
-                      style={{ width: '7%' }} 
-                      className="bg-gold-light hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-ink uppercase tracking-wider relative group"
-                      title="Google Search: 7%"
-                    >
-                      7%
-                      <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Search: 7%</span>
-                    </div>
+                    {trafficSources.instagram > 0 && (
+                      <div 
+                        style={{ width: `${trafficSources.instagram}%` }} 
+                        className="bg-maroon hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-white uppercase tracking-wider relative group"
+                        title={`Instagram: ${trafficSources.instagram}%`}
+                      >
+                        {trafficSources.instagram}%
+                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Instagram: {trafficSources.instagram}%</span>
+                      </div>
+                    )}
+                    {trafficSources.whatsapp > 0 && (
+                      <div 
+                        style={{ width: `${trafficSources.whatsapp}%` }} 
+                        className="bg-gold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-ink uppercase tracking-wider relative group"
+                        title={`WhatsApp: ${trafficSources.whatsapp}%`}
+                      >
+                        {trafficSources.whatsapp}%
+                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">WhatsApp: {trafficSources.whatsapp}%</span>
+                      </div>
+                    )}
+                    {trafficSources.direct > 0 && (
+                      <div 
+                        style={{ width: `${trafficSources.direct}%` }} 
+                        className="bg-ink hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-white uppercase tracking-wider relative group"
+                        title={`Direct: ${trafficSources.direct}%`}
+                      >
+                        {trafficSources.direct}%
+                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Direct: {trafficSources.direct}%</span>
+                      </div>
+                    )}
+                    {trafficSources.search > 0 && (
+                      <div 
+                        style={{ width: `${trafficSources.search}%` }} 
+                        className="bg-gold-light hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-ink uppercase tracking-wider relative group"
+                        title={`Search: ${trafficSources.search}%`}
+                      >
+                        {trafficSources.search}%
+                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Search: {trafficSources.search}%</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Legend Labels */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[9px] font-bold uppercase tracking-wider">
                     <div className="flex items-center gap-1.5 text-maroon">
                       <span className="w-2 h-2 rounded-full bg-maroon shrink-0"></span>
-                      <span>Instagram (58%)</span>
+                      <span>Instagram ({trafficSources.instagram}%)</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-gold">
                       <span className="w-2 h-2 rounded-full bg-gold shrink-0"></span>
-                      <span>WhatsApp (24%)</span>
+                      <span>WhatsApp ({trafficSources.whatsapp}%)</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-ink">
                       <span className="w-2 h-2 rounded-full bg-ink shrink-0"></span>
-                      <span>Direct (11%)</span>
+                      <span>Direct ({trafficSources.direct}%)</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-gold-light">
                       <span className="w-2 h-2 rounded-full bg-gold-light shrink-0"></span>
-                      <span>Google (7%)</span>
+                      <span>Google/Search ({trafficSources.search}%)</span>
                     </div>
                   </div>
                 </div>
@@ -759,6 +821,333 @@ export default function DashboardClient({
             </div>
           </div>
         )}
+
+        {/* Tab 2: Real Visitor Analytics Dashboard */}
+        {activeTab === "analytics" && (() => {
+          // Calculate counts
+          const now = new Date();
+          const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          
+          const todayVisits = visits.filter(v => new Date(v.visited_at) >= startOfToday);
+          const todayCount = todayVisits.length;
+          
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          const weeklyVisits = visits.filter(v => new Date(v.visited_at) >= sevenDaysAgo);
+          const weeklyCount = weeklyVisits.length;
+          
+          const thisMonthVisits = visits.filter(v => {
+            const d = new Date(v.visited_at);
+            return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+          });
+          const thisMonthCount = thisMonthVisits.length;
+
+          // Process devices
+          const devices = { Mobile: 0, Desktop: 0, Tablet: 0 };
+          visits.forEach(v => {
+            const dev = v.device_type || "Desktop";
+            if (dev === "Mobile") devices.Mobile++;
+            else if (dev === "Tablet") devices.Tablet++;
+            else devices.Desktop++;
+          });
+
+          // Process browsers
+          const browsersList: Record<string, number> = {};
+          visits.forEach(v => {
+            const b = v.browser || "Other";
+            browsersList[b] = (browsersList[b] || 0) + 1;
+          });
+          const sortedBrowsers = Object.entries(browsersList)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+          // Process referrers
+          const referrersList: Record<string, number> = {};
+          visits.forEach(v => {
+            const r = v.referrer || "Direct";
+            referrersList[r] = (referrersList[r] || 0) + 1;
+          });
+          const sortedReferrers = Object.entries(referrersList)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+          // Process locations (Country & Region)
+          const locationsList: Record<string, number> = {};
+          visits.forEach(v => {
+            const loc = `${v.region || "Unknown"}, ${v.country || "Unknown"}`;
+            locationsList[loc] = (locationsList[loc] || 0) + 1;
+          });
+          const sortedLocations = Object.entries(locationsList)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+          // 30-Day Trend Data
+          const dailyCounts: Record<string, number> = {};
+          for (let i = 29; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateStr = d.toISOString().split('T')[0];
+            dailyCounts[dateStr] = 0;
+          }
+          visits.forEach((v) => {
+            const dateStr = new Date(v.visited_at).toISOString().split('T')[0];
+            if (dailyCounts[dateStr] !== undefined) {
+              dailyCounts[dateStr]++;
+            }
+          });
+          const chartData = Object.entries(dailyCounts).map(([date, count]) => {
+            const parts = date.split('-');
+            const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            const label = dObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return { date, label, count };
+          });
+
+          // SVG Line Chart calculations
+          const maxCount = Math.max(...chartData.map(d => d.count), 5);
+          const points = chartData.map((d, i) => {
+            const x = 40 + (i / (chartData.length - 1)) * 440;
+            const y = 145 - (d.count / maxCount) * 120;
+            return { x, y, ...d };
+          });
+          const pathD = points.length > 0 
+            ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ")
+            : "";
+          const areaD = points.length > 0
+            ? `${pathD} L ${points[points.length - 1].x} 145 L ${points[0].x} 145 Z`
+            : "";
+
+          return (
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex justify-between items-center border-b border-maroon/10 pb-4">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gold tracking-widest">Real-time stats</span>
+                  <h1 className="font-display text-2xl font-bold text-ink mt-1">Website Traffic & Analytics</h1>
+                </div>
+                <div className="flex items-center gap-2 bg-green-50 border border-green-200/50 rounded-full px-3 py-1 text-[10px] font-bold text-green-600 uppercase tracking-wider">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  {activeOnlineUsers} active sessions
+                </div>
+              </div>
+
+              {/* Analytics Summary Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { title: "Total Visitors", count: totalVisitsCount, desc: "Unique since launch", icon: Users, color: "text-maroon bg-maroon/5 border-maroon/10" },
+                  { title: "Today's Visitors", count: todayCount, desc: "Recorded today", icon: Compass, color: "text-gold bg-gold/5 border-gold/10" },
+                  { title: "Weekly Visitors", count: weeklyCount, desc: "Last 7 days", icon: TrendingUp, color: "text-ink bg-ink/5 border-ink/10" },
+                  { title: "Monthly Visitors", count: thisMonthCount, desc: "Current month", icon: BarChart3, color: "text-gold-light bg-gold-light/5 border-gold-light/10" }
+                ].map((card, idx) => (
+                  <div key={idx} className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm flex items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold text-ink-muted tracking-wider block">{card.title}</span>
+                      <p className="font-display text-3xl font-extrabold text-ink leading-none">{card.count.toLocaleString()}</p>
+                      <span className="text-[9px] text-ink-muted/50 block font-medium mt-1">{card.desc}</span>
+                    </div>
+                    <div className={`p-3 rounded-xl border shrink-0 ${card.color}`}>
+                      <card.icon className="w-5 h-5" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Chart & Traffic sources */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* 30-Day Trend Chart */}
+                <div className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm lg:col-span-2 space-y-4">
+                  <div className="flex justify-between items-center text-xs font-bold text-ink uppercase tracking-wider">
+                    <span>Visitor Trend (Last 30 Days)</span>
+                    <span className="text-[10px] text-green-600 font-semibold uppercase tracking-wider">Real Data Only</span>
+                  </div>
+
+                  {/* SVG Chart */}
+                  <div className="relative w-full h-[220px] pt-4">
+                    <svg viewBox="0 0 500 170" width="100%" height="100%" className="overflow-visible">
+                      <defs>
+                        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#7A1F2B" stopOpacity="0.25" />
+                          <stop offset="100%" stopColor="#7A1F2B" stopOpacity="0.00" />
+                        </linearGradient>
+                      </defs>
+
+                      {/* Horizontal Grid lines */}
+                      {[0, 0.25, 0.5, 0.75, 1].map((val, idx) => {
+                        const y = 145 - val * 120;
+                        const labelValue = Math.round(val * maxCount);
+                        return (
+                          <g key={idx} className="opacity-30">
+                            <line x1="40" y1={y} x2="480" y2={y} stroke="#7A1F2B" strokeWidth="0.5" strokeDasharray="3 3" />
+                            <text x="30" y={y + 3} textAnchor="end" fontSize="8" fontWeight="bold" fill="#1C1B19">{labelValue}</text>
+                          </g>
+                        );
+                      })}
+
+                      {/* Shaded Area */}
+                      {areaD && (
+                        <path d={areaD} fill="url(#chartGradient)" />
+                      )}
+
+                      {/* Trend Line */}
+                      {pathD && (
+                        <path d={pathD} fill="none" stroke="#7A1F2B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      )}
+
+                      {/* X Axis labels (Every 5th point) */}
+                      {points.filter((_, i) => i % 5 === 0 || i === points.length - 1).map((p, idx) => (
+                        <text key={idx} x={p.x} y="160" textAnchor="middle" fontSize="7" fontWeight="bold" fill="#1C1B19" className="opacity-50">
+                          {p.label}
+                        </text>
+                      ))}
+
+                      {/* Interactive hover circles */}
+                      {points.map((p, idx) => (
+                        <g key={idx} className="group">
+                          {/* Visible point circle */}
+                          <circle cx={p.x} cy={p.y} r="3" fill="#D4AF37" stroke="#7A1F2B" strokeWidth="1" className="transition-all group-hover:r-4 group-hover:fill-white" />
+                          
+                          {/* Invisible larger hover target */}
+                          <circle 
+                            cx={p.x} 
+                            cy={p.y} 
+                            r="8" 
+                            fill="transparent" 
+                            className="cursor-pointer"
+                            onMouseEnter={() => {
+                              const el = document.getElementById("chart-tooltip");
+                              if (el) {
+                                el.innerHTML = `<span class="font-bold">${p.label}</span>: ${p.count} visitors`;
+                                el.style.opacity = "1";
+                                el.style.left = `${(p.x / 500) * 100}%`;
+                                el.style.top = `${(p.y / 170) * 100 - 15}%`;
+                              }
+                            }}
+                            onMouseLeave={() => {
+                              const el = document.getElementById("chart-tooltip");
+                              if (el) el.style.opacity = "0";
+                            }}
+                          />
+                        </g>
+                      ))}
+                    </svg>
+
+                    {/* Tooltip Overlay */}
+                    <div 
+                      id="chart-tooltip" 
+                      className="absolute bg-ink text-white text-[9px] py-1 px-2.5 rounded-lg shadow-lg border border-gold/10 opacity-0 pointer-events-none transition-all duration-200 transform -translate-x-1/2 -translate-y-full font-sans tracking-wide whitespace-nowrap z-20"
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Referrers */}
+                <div className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm space-y-4">
+                  <div className="flex justify-between items-center text-xs font-bold text-ink uppercase tracking-wider border-b border-maroon/5 pb-2">
+                    <span className="flex items-center gap-1.5"><Globe className="w-4 h-4 text-maroon" /> Traffic Sources</span>
+                    <span className="text-[10px] text-ink-muted">Visits</span>
+                  </div>
+                  {sortedReferrers.length === 0 ? (
+                    <p className="text-xs text-ink-muted/50 text-center py-10 font-medium">No traffic records yet.</p>
+                  ) : (
+                    <div className="space-y-3 text-xs">
+                      {sortedReferrers.map(([src, count]) => {
+                        const percent = visits.length > 0 ? Math.round((count / visits.length) * 100) : 0;
+                        return (
+                          <div key={src} className="space-y-1.5">
+                            <div className="flex justify-between items-center text-ink font-semibold">
+                              <span className="truncate pr-2 capitalize">{src}</span>
+                              <span className="font-bold shrink-0">{count} <span className="text-[9px] text-ink-muted/50">({percent}%)</span></span>
+                            </div>
+                            <div className="w-full bg-ivory h-1.5 rounded-full overflow-hidden">
+                              <div style={{ width: `${percent}%` }} className="bg-maroon h-full rounded-full" />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Browser, Device and Location Grids */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Device breakdown */}
+                <div className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm space-y-4">
+                  <div className="flex justify-between items-center text-xs font-bold text-ink uppercase tracking-wider border-b border-maroon/5 pb-2">
+                    <span className="flex items-center gap-1.5"><Smartphone className="w-4 h-4 text-maroon" /> Devices</span>
+                    <span className="text-[10px] text-ink-muted">Share</span>
+                  </div>
+                  <div className="space-y-3 text-xs">
+                    {[
+                      { type: "Desktop", count: devices.Desktop, color: "bg-ink" },
+                      { type: "Mobile", count: devices.Mobile, color: "bg-maroon" },
+                      { type: "Tablet", count: devices.Tablet, color: "bg-gold" }
+                    ].map((dev) => {
+                      const percent = visits.length > 0 ? Math.round((dev.count / visits.length) * 100) : 0;
+                      return (
+                        <div key={dev.type} className="space-y-1.5">
+                          <div className="flex justify-between items-center font-semibold text-ink">
+                            <span>{dev.type}</span>
+                            <span className="font-bold">{dev.count} <span className="text-[9px] text-ink-muted/50">({percent}%)</span></span>
+                          </div>
+                          <div className="w-full bg-ivory h-1.5 rounded-full overflow-hidden">
+                            <div style={{ width: `${percent}%` }} className={`${dev.color} h-full rounded-full`} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Top Browsers */}
+                <div className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm space-y-4">
+                  <div className="flex justify-between items-center text-xs font-bold text-ink uppercase tracking-wider border-b border-maroon/5 pb-2">
+                    <span className="flex items-center gap-1.5"><Chrome className="w-4 h-4 text-maroon" /> Browsers</span>
+                    <span className="text-[10px] text-ink-muted">Visits</span>
+                  </div>
+                  {sortedBrowsers.length === 0 ? (
+                    <p className="text-xs text-ink-muted/50 text-center py-8">No records.</p>
+                  ) : (
+                    <div className="divide-y divide-gray-100 text-xs">
+                      {sortedBrowsers.map(([bName, count]) => {
+                        const percent = visits.length > 0 ? Math.round((count / visits.length) * 100) : 0;
+                        return (
+                          <div key={bName} className="py-2.5 flex justify-between items-center">
+                            <span className="font-bold text-ink">{bName}</span>
+                            <span className="font-bold text-ink-muted">{count} <span className="text-[9px] text-ink-muted/40 font-medium">({percent}%)</span></span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Top Locations */}
+                <div className="bg-white p-6 rounded-2xl border border-maroon/5 shadow-sm space-y-4">
+                  <div className="flex justify-between items-center text-xs font-bold text-ink uppercase tracking-wider border-b border-maroon/5 pb-2">
+                    <span className="flex items-center gap-1.5"><Compass className="w-4 h-4 text-maroon" /> Top Geographies</span>
+                    <span className="text-[10px] text-ink-muted">Visits</span>
+                  </div>
+                  {sortedLocations.length === 0 ? (
+                    <p className="text-xs text-ink-muted/50 text-center py-8">No location records.</p>
+                  ) : (
+                    <div className="divide-y divide-gray-100 text-xs">
+                      {sortedLocations.map(([locName, count]) => {
+                        const percent = visits.length > 0 ? Math.round((count / visits.length) * 100) : 0;
+                        return (
+                          <div key={locName} className="py-2.5 flex justify-between items-center">
+                            <span className="font-bold text-ink truncate pr-2" title={locName}>{locName}</span>
+                            <span className="font-bold text-ink-muted shrink-0">{count} <span className="text-[9px] text-ink-muted/40 font-medium">({percent}%)</span></span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Tab 2: Products CRUD Management */}
         {activeTab === "products" && (

@@ -573,3 +573,78 @@ export async function deleteContactEnquiry(id: string): Promise<boolean> {
   }
   return true;
 }
+
+/* ============================================================================
+   WEBSITE VISITOR ANALYTICS SERVICES
+   ============================================================================ */
+
+export async function getWebsiteVisits(): Promise<{
+  totalCount: number;
+  recentVisits: any[];
+}> {
+  try {
+    const client = await getSupabaseClient();
+    
+    // Get total count of rows
+    const { count, error: countError } = await client
+      .from('website_visits')
+      .select('*', { count: 'exact', head: true });
+      
+    if (countError) {
+      console.warn('Supabase website_visits count error:', countError.message);
+      return { totalCount: 0, recentVisits: [] };
+    }
+    
+    // Get visits in the last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const { data: recentVisits, error: recentError } = await client
+      .from('website_visits')
+      .select('*')
+      .gte('visited_at', thirtyDaysAgo.toISOString())
+      .order('visited_at', { ascending: false });
+      
+    if (recentError) {
+      console.warn('Supabase website_visits recent error:', recentError.message);
+      return { totalCount: count || 0, recentVisits: [] };
+    }
+    
+    return {
+      totalCount: count || 0,
+      recentVisits: recentVisits || []
+    };
+  } catch (e) {
+    console.warn('getWebsiteVisits error caught:', e);
+    return { totalCount: 0, recentVisits: [] };
+  }
+}
+
+export async function addWebsiteVisit(visit: {
+  visitor_id: string;
+  device_type?: string;
+  browser?: string;
+  referrer?: string;
+  country?: string;
+  region?: string;
+}): Promise<boolean> {
+  try {
+    const client = await getSupabaseClient(true);
+    const newVisit = {
+      ...visit,
+      visited_at: new Date().toISOString()
+    };
+    const { error } = await client.from('website_visits').insert([newVisit]);
+    if (error) {
+      if (error.code === '23505') {
+        return true; // Already registered
+      }
+      console.error('Supabase addWebsiteVisit error:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error('addWebsiteVisit error caught:', e);
+    return false;
+  }
+}

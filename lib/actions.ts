@@ -1,6 +1,6 @@
 "use server";
-
-import { cookies } from "next/headers";
+ 
+import { cookies, headers } from "next/headers";
 import {
   getCategories,
   addCategory,
@@ -25,6 +25,8 @@ import {
   getContactEnquiries,
   addContactEnquiry,
   deleteContactEnquiry,
+  getWebsiteVisits,
+  addWebsiteVisit,
 } from "./db";
 import { Category, Product, SiteConfig, InstagramPost, Review, ContactEnquiry } from "./types";
 
@@ -378,5 +380,70 @@ export async function removeContactEnquiryAction(id: string): Promise<boolean> {
   const isAuth = await checkAdminAuth();
   if (!isAuth) throw new Error("Unauthorized");
   return deleteContactEnquiry(id);
+}
+
+export async function fetchWebsiteVisits(): Promise<{
+  totalCount: number;
+  recentVisits: any[];
+}> {
+  const isAuth = await checkAdminAuth();
+  if (!isAuth) throw new Error("Unauthorized");
+  return getWebsiteVisits();
+}
+
+export async function recordVisitAction(visitorId: string): Promise<boolean> {
+  try {
+    const headerList = await headers();
+    const ua = headerList.get("user-agent") || "";
+    const ref = headerList.get("referer") || "";
+    
+    // Geolocation headers populated by Vercel
+    const countryCode = headerList.get("x-vercel-ip-country") || "";
+    const regionCode = headerList.get("x-vercel-ip-country-region") || "";
+    const city = headerList.get("x-vercel-ip-city") || "";
+    
+    const country = countryCode || "Unknown";
+    const region = regionCode ? `${regionCode}, ${city}`.trim() : (city || "Unknown");
+    
+    // Parse device
+    let deviceType = "Desktop";
+    if (/Mobi|Android|iPhone|iPad|iPod/i.test(ua)) {
+      deviceType = /iPad|tablet/i.test(ua) ? "Tablet" : "Mobile";
+    }
+    
+    // Parse browser
+    let browser = "Other";
+    if (ua.includes("Firefox")) browser = "Firefox";
+    else if (ua.includes("Chrome") && !ua.includes("Chromium")) browser = "Chrome";
+    else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+    else if (ua.includes("Edge")) browser = "Edge";
+    else if (ua.includes("Opera") || ua.includes("OPR")) browser = "Opera";
+    
+    // Parse referrer
+    let referrer = "Direct";
+    if (ref.includes("instagram.com")) referrer = "Instagram";
+    else if (ref.includes("whatsapp.com") || ref.includes("wa.me")) referrer = "WhatsApp";
+    else if (ref.includes("facebook.com")) referrer = "Facebook";
+    else if (ref.includes("google.com")) referrer = "Google Search";
+    else if (ref) {
+      try {
+        referrer = new URL(ref).hostname;
+      } catch (e) {
+        referrer = "Referral";
+      }
+    }
+    
+    return addWebsiteVisit({
+      visitor_id: visitorId,
+      device_type: deviceType,
+      browser: browser,
+      referrer: referrer,
+      country: country,
+      region: region
+    });
+  } catch (err) {
+    console.error("recordVisitAction error caught:", err);
+    return false;
+  }
 }
 
