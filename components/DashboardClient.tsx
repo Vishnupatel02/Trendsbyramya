@@ -145,7 +145,7 @@ export default function DashboardClient({
     
     const total = visits.length;
     if (total === 0) {
-      return { instagram: 58, whatsapp: 24, direct: 11, search: 7 };
+      return { instagram: 0, whatsapp: 0, direct: 0, search: 0 };
     }
     
     // Calculate percentages
@@ -720,53 +720,60 @@ export default function DashboardClient({
                   <div className="flex justify-between items-center text-[10px] font-bold text-ink uppercase tracking-wider">
                     <span>Traffic Sources Distribution</span>
                     <span className="text-gold">
-                      {trafficSources.instagram >= trafficSources.whatsapp && trafficSources.instagram >= trafficSources.direct && trafficSources.instagram >= trafficSources.search ? "Instagram is leading source" :
+                      {visits.length === 0 ? "No traffic recorded" :
+                       trafficSources.instagram >= trafficSources.whatsapp && trafficSources.instagram >= trafficSources.direct && trafficSources.instagram >= trafficSources.search ? "Instagram is leading source" :
                        trafficSources.whatsapp >= trafficSources.direct && trafficSources.whatsapp >= trafficSources.search ? "WhatsApp is leading source" :
                        trafficSources.direct >= trafficSources.search ? "Direct Traffic is leading source" : "Search is leading source"}
                     </span>
                   </div>
 
                   {/* Multi-segment horizontal progress/section bar */}
-                  <div className="w-full h-6 rounded-lg overflow-hidden flex shadow-inner border border-maroon/5">
-                    {trafficSources.instagram > 0 && (
-                      <div 
-                        style={{ width: `${trafficSources.instagram}%` }} 
-                        className="bg-maroon hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-white uppercase tracking-wider relative group"
-                        title={`Instagram: ${trafficSources.instagram}%`}
-                      >
-                        {trafficSources.instagram}%
-                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Instagram: {trafficSources.instagram}%</span>
-                      </div>
-                    )}
-                    {trafficSources.whatsapp > 0 && (
-                      <div 
-                        style={{ width: `${trafficSources.whatsapp}%` }} 
-                        className="bg-gold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-ink uppercase tracking-wider relative group"
-                        title={`WhatsApp: ${trafficSources.whatsapp}%`}
-                      >
-                        {trafficSources.whatsapp}%
-                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">WhatsApp: {trafficSources.whatsapp}%</span>
-                      </div>
-                    )}
-                    {trafficSources.direct > 0 && (
-                      <div 
-                        style={{ width: `${trafficSources.direct}%` }} 
-                        className="bg-ink hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-white uppercase tracking-wider relative group"
-                        title={`Direct: ${trafficSources.direct}%`}
-                      >
-                        {trafficSources.direct}%
-                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Direct: {trafficSources.direct}%</span>
-                      </div>
-                    )}
-                    {trafficSources.search > 0 && (
-                      <div 
-                        style={{ width: `${trafficSources.search}%` }} 
-                        className="bg-gold-light hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-ink uppercase tracking-wider relative group"
-                        title={`Search: ${trafficSources.search}%`}
-                      >
-                        {trafficSources.search}%
-                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Search: {trafficSources.search}%</span>
-                      </div>
+                  <div className="w-full h-6 rounded-lg overflow-hidden flex shadow-inner border border-maroon/5 bg-gray-50 items-center justify-center">
+                    {visits.length === 0 ? (
+                      <span className="text-[9px] text-ink-muted/50 font-bold uppercase tracking-wider">No Traffic Data Recorded Yet</span>
+                    ) : (
+                      <>
+                        {trafficSources.instagram > 0 && (
+                          <div 
+                            style={{ width: `${trafficSources.instagram}%` }} 
+                            className="bg-maroon hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-white uppercase tracking-wider relative group"
+                            title={`Instagram: ${trafficSources.instagram}%`}
+                          >
+                            {trafficSources.instagram}%
+                            <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Instagram: {trafficSources.instagram}%</span>
+                          </div>
+                        )}
+                        {trafficSources.whatsapp > 0 && (
+                          <div 
+                            style={{ width: `${trafficSources.whatsapp}%` }} 
+                            className="bg-gold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-ink uppercase tracking-wider relative group"
+                            title={`WhatsApp: ${trafficSources.whatsapp}%`}
+                          >
+                            {trafficSources.whatsapp}%
+                            <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">WhatsApp: {trafficSources.whatsapp}%</span>
+                          </div>
+                        )}
+                        {trafficSources.direct > 0 && (
+                          <div 
+                            style={{ width: `${trafficSources.direct}%` }} 
+                            className="bg-ink hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-white uppercase tracking-wider relative group"
+                            title={`Direct: ${trafficSources.direct}%`}
+                          >
+                            {trafficSources.direct}%
+                            <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Direct: {trafficSources.direct}%</span>
+                          </div>
+                        )}
+                        {trafficSources.search > 0 && (
+                          <div 
+                            style={{ width: `${trafficSources.search}%` }} 
+                            className="bg-gold-light hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center text-[9px] font-extrabold text-ink uppercase tracking-wider relative group"
+                            title={`Search: ${trafficSources.search}%`}
+                          >
+                            {trafficSources.search}%
+                            <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-ink text-white text-[8px] py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Search: {trafficSources.search}%</span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
 
