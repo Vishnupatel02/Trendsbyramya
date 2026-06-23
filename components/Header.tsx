@@ -191,7 +191,7 @@ export default function Header({ onCartClick }: HeaderProps) {
         </div>
 
         {/* Mobile Horizontal Swipe Navigation Bar (Directly below Logo/Icons row) */}
-        <nav className="md:hidden flex items-center overflow-x-auto whitespace-nowrap scrollbar-none py-2 border-t border-maroon/5 gap-6 scroll-smooth select-none touch-pan-x bg-white/20 backdrop-blur-md rounded-lg px-3 my-1 border border-white/40 shadow-sm">
+        <nav className="md:hidden flex items-center overflow-x-auto whitespace-nowrap scrollbar-none py-2 border-t border-maroon/5 gap-6 scroll-smooth select-none touch-pan-x bg-white rounded-lg px-3 my-1 border border-maroon/10 shadow-sm">
           <Link
             href="/"
             className={`text-xs font-bold uppercase tracking-wider transition-colors py-1.5 px-0.5 ${
